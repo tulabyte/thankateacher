@@ -1,0 +1,365 @@
+
+<!doctype html>
+<html lang="en" data-ng-app="app">
+    <head>
+        <meta charset="utf-8">
+        <title>Thank A Teacher |  Appreciate the great Nigerian teachers</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all"/>
+        <link href="css/icons.min.css" rel="stylesheet" type="text/css" media="all"/>
+        <link href="css/flexslider.min.css" rel="stylesheet" type="text/css" media="all"/>
+        <link href="css/theme-velvet.css" rel="stylesheet" type="text/css" media="all"/>
+        <link href="css/custom.css" rel="stylesheet" type="text/css" media="all"/>
+        <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic' rel='stylesheet' type='text/css'>
+        <link href="http://fonts.googleapis.com/css?family=Questrial" rel="stylesheet" type="text/css">
+        <link href="css/font-questrial.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" type="text/css" href="admin/vendor/jquery/datatables/dataTables.bootstrap.css">
+    </head>
+
+    <body ng-controller="AppCtrl">
+
+				
+		<div class="nav-container">
+			
+			
+		
+			<nav class="nav-1">
+				<div class="navbar">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-3 col-sm-6 col-xs-4">
+								<a href="index.html">
+									<img class="logo" alt="Logo" src="img/logo.png">
+								</a>
+							</div>
+
+							<div class="col-md-3 text-right col-sm-6 col-md-push-6 col-xs-8">
+								<div class="mobile-toggle">
+									<div class="upper"></div>
+									<div class="middle"></div>
+									<div class="lower"></div>
+								</div>
+							</div>
+
+							<div class="col-md-6 text-right col-sm-12 col-xs-12">
+								<ul class="menu">
+									<li>
+										<a class="inner-link" href="#home">
+											Drop A Message
+										</a>
+									</li>
+
+									<li>
+										<a class="inner-link" href="#featured">
+											Featured
+										</a>
+									</li>
+									
+									<li>
+										<a class="inner-link" href="#about">
+											Archive
+										</a>
+									</li>
+									
+									<!-- <li>
+										<a class="inner-link" href="#trainer">
+											Videos
+										</a>
+									</li> -->
+									
+									<!-- <li>
+										<a class="inner-link" href="#plans">
+											Get Pin
+										</a>
+									</li> -->
+									
+									<li>
+										<a class="inner-link" href="#faq">
+											FAQs
+										</a>
+									</li>
+							
+									
+								</ul>
+							</div>
+					
+							<!-- <div class="col-md-6 text-center col-md-pull-3 col-sm-12 col-xs-12">
+								
+							</div> -->
+				
+				
+						</div>
+					</div>
+				</div>
+			</nav>
+		
+		</div>
+		
+		<div class="main-container">
+					
+			<a id="home" class="in-page-link"></a>
+			
+			<section class="header header-1 fixed-header">
+		
+				<div class="background-image-holder">
+					<img alt="Background Image" class="background-image" src="img/teacher-slide-bg.jpg">
+				</div>
+		
+				<div class="container">
+					<div class="row v-align-children">
+						<div class="col-md-5">
+							<h3 class="text-white">Take one minute to <br>
+							to thank that <br>
+							special Teacher</h3>
+							<h5 class="text-white">We want more people to look back and thank their teachers; they put a lot of energy into helping us get to where we are today.</h5>
+						</div>
+					
+						<div class="col-md-7">
+							<div class="inner">
+								<ul>
+									<li>
+										<i class="text-white icon-pen-streamline"></i>
+										<p class="text-white">
+											Drop a message for your teacher here.</p>
+									</li>
+								</ul>
+								<div class="row">
+									<form class="form-email" data-success="Thanks for your submission, we will be in touch shortly." data-error="Please fill all fields correctly.">
+										<!-- Page 1 - Teacher & Student Info -->
+										<div>
+											<div class="col-md-6">
+												<input type="text" class="signup-name-field validate-required" placeholder="Your Teacher's Name">
+												<input type="text" class="validate-email signup-email-field" placeholder="Teacher's Email (optional)">
+												<input type="text" class="signup-name-field" placeholder="Teacher's Phone (optional)">
+											</div>
+											<div class="col-md-6">
+												<input type="text" class="signup-name-field validate-required" placeholder="Your Name">
+												<input type="text" class="signup-email-field validate-email" placeholder="Your Email (optional)">
+												<input type="text" class="signup-name-field" placeholder="Your Phone (optional)">
+											</div>
+										</div>
+
+										<!-- Page 2 - School Info -->
+										<div>
+											<div class="col-md-6">
+												<select class="validate-required">
+													<option value="">- State where he/she taught -</option>
+													<option value="Abia">Abia</option>
+													<option value="Kaduna">Kaduna</option>
+													<option value="Lagos">Lagos</option>
+												</select>
+												<input type="text" class="validate-required signup-email-field" placeholder="City">
+											</div>
+											<div class="col-md-6">
+												<input type="text" class="signup-name-field validate-required" placeholder="School/Institution">
+												<input type="text" class="validate-required" placeholder="Class">
+											</div>
+										</div>
+
+										<!-- Page 3 - Thank You Message -->
+										<div>
+											<div class="col-md-12">
+												<textarea class="validate-required" placeholder="Enter your 'Thank You' message here. Try to mention what you're thanking your teacher for and in what way he/she has inspired you to become who you are today."></textarea>
+											</div>
+										</div>
+
+										<!-- Navigation buttons -->
+										<div class="col-md-6">
+											<input type="button" value="« Back">
+										</div>
+										<div class="col-md-6">
+											<input type="button" value="Next »">
+										</div>
+
+										<!-- Submit Button -->
+										<div class="col-md-6">
+											
+										</div>
+										<div class="col-md-6">
+											<input type="submit" value="Submit Message »">
+										</div>
+
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+			</section>			
+			
+			
+			<a id="featured" class="in-page-link"></a>
+			
+			
+			
+			<section class="testimonials testimonials-3 bg-secondary">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h6>A few selected Thank You messages</h6>
+						</div>
+					</div>
+				
+					<div class="row">
+						<div class="col-sm-4 text-center testimonial">
+							<p class="lead">
+								"I've been through four gym memberships in the last five years and never got the results I was looking for. After just 2 months with Mike and the team, I'm in the<br>best shape of my life."</p>
+							<p>
+								<em>— Segun Chukwu to Mr Daniel Adamu<br>Boys High School, Ibadan</em>
+							</p>
+						</div>
+					
+						<div class="col-sm-4 text-center testimonial">
+							<p class="lead">
+								"I used to dread exercise and had an endless list of excuses<br>as to why I couldn't keep up my routine. The team at Thank-A-Teacher have turned me around and now I can't wait for the next session!"</p>
+							<p>
+								<em>— Henrietta Okonji to Ms Aishat Bassey<br>Queens College, Lagos</em>
+							</p>
+						</div>
+
+						<div class="col-sm-4 text-center testimonial">
+							<p class="lead">
+								"Credibly maximize B2B platforms and professional networks. Seamlessly streamline collaborative vortals through synergistic mindshare. Objectively whiteboard interoperable experiences without efficient best."</p>
+							<p>
+								<em>— Godstime Onoche to Mrs Bisi Tompang, Jos Model College, Jos</em>
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>			
+			
+			
+			<a id="faq" class="in-page-link"></a>
+			
+			<section class="faq faq-1">
+				<div class="container">
+					
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h6>Frequently Asked Questions</h6>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="faq">
+								<h5>Is the Thank-A-Teacher Club a contract?</h5>
+								<p>
+									No, you are free to come and go as you please. We don't believe in locking you into any long-term contracts. When you purchase a monthly pre-paid membership, you have 1 week to cancel for a full refund.</p>
+							</div>
+					
+							
+					
+							<div class="faq">
+								<h5>Is there a discount if I refer a friend?</h5>
+								<p>Yes, we offer referral discounts for members on Thank-A-Teacher Club memberships. Each friend you refer who takes up a monthly membership entitles you to 1 weeks free club membership.</p>
+							</div>
+						</div>
+					
+						<div class="col-sm-6">
+							<div class="faq">
+								<h5>Do you run female only workshops?</h5>
+								<p>No - We foster an inclusive atmosphere where all ages, genders and beliefs are accepted equally. Training with a diverse group leads to a more holistic fitness experience for all.</p>
+							</div>
+					
+							<div class="faq">
+								<h5>Tell me more about the meal plans.</h5>
+								<p>Our nutrition specialists have formulated a broad range of healthy meal options to sustain appropriate energy levels required for our sessions whilst keeping you looking trim, taut and terrific.</p>
+							</div>
+						</div>
+					
+					</div>
+				
+				</div>
+			</section>
+			
+			
+			<section class="cta cta-7">
+				<div class="background-image-holder">
+					<img alt="Background Image" class="background-image" src="img/teacher-section-bg.jpg">
+				</div>
+			
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h4 class="text-white">Still have questions? Tweet <a target="_blank" href="https://twitter.com/thankateachernigeria" style="color:#fff; text-decoration: underline;">@thankateachernigeria</a>&nbsp;for answers</h4>
+						</div>
+					</div>
+				</div>
+			</section>
+			<footer class="footer footer-1">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-4">
+							<ul class="social-links">
+								<li><a href="#"><i class="icon-facebook"></i></a></li>
+								<li><a href="#"><i class="icon-twitter"></i></a></li>
+								<li><a href="#"><i class="icon-youtube-alt"></i></a></li>
+							</ul>
+						</div>
+					
+						<div class="col-sm-4 text-center">
+							<p class="sub">
+								© Copyright 2017 Nigerian Teaching Awards - All Rights Reserved <br>Site Developed by <a href="http://tulabyte.net" target="_blank">Tulabyte</a>
+							</p>
+						</div>
+					
+						<div class="col-sm-4 text-right">
+							<a href="#">
+								<img alt="Logo" src="img/logo.png">
+							</a>
+						</div>	
+					</div>
+				</div>
+			</footer>
+		</div>
+		
+		<!-- jQuery -->
+		<script src="js/jquery.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/plugins/ScrollToPlugin.min.js"></script>
+		<script src="admin/vendor/jquery/datatables/jquery.dataTables.min.js"></script>
+  		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+
+  		<!-- Angular -->
+  <script src="admin/vendor/angular/angular.js"></script>
+  
+  <script src="admin/vendor/angular/angular-animate/angular-animate.js"></script>
+  <script src="admin/vendor/angular/angular-cookies/angular-cookies.js"></script>
+  <script src="admin/vendor/angular/angular-resource/angular-resource.js"></script>
+  <script src="admin/vendor/angular/angular-sanitize/angular-sanitize.js"></script>
+  <script src="admin/vendor/angular/angular-touch/angular-touch.js"></script>
+  <!-- Vendor -->
+  <script src="admin/vendor/angular/angular-ui-router/angular-ui-router.js"></script> 
+  <script src="admin/bower_components/angular-datatables/dist/angular-datatables.min.js"></script>
+  <script src="admin/bower_components/angular-momentjs/angular-momentjs.js"></script>
+
+  <!-- bootstrap -->
+  <script src="admin/vendor/angular/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script type="text/javascript" src="admin/vendor/jquery/datatables/dataTables.bootstrap.js"></script>
+  <!-- lazyload -->
+  <script src="admin/vendor/angular/oclazyload/ocLazyLoad.js"></script>
+
+
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/flexslider.min.js"></script>
+        <script src="js/smooth-scroll.min.js"></script>
+        <script src="js/placeholders.min.js"></script>
+        <script src="js/twitterfetcher.min.js"></script>
+        <script src="js/spectragram.min.js"></script>
+		<script src="js/parallax.js"></script>
+        <script src="js/scripts.js"></script>
+
+        <!-- App -->
+  <script src="js-angular/app.js"></script>
+  <script src="js-angular/config.js"></script>
+  <script src="js-angular/config.lazyload.js"></script>
+  <script src="js-angular/config.router.js"></script>
+  <script src="js-angular/main.js"></script>
+  <script src="js-angular/services/ui-load.js"></script>
+  <script src="js-angular/services/data.js"></script>
+    </body>
+</html>
+
+				

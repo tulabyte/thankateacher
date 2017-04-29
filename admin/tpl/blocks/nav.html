@@ -1,0 +1,89 @@
+<!-- list -->
+<ul class="nav">
+  <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+    <span>Reporting & Statistics</span>
+  </li>
+  <!-- <li>
+    <a class="auto" href="#/app/dashboard" ui-sref="app.dashboard">      
+      <i class="glyphicon glyphicon-stats icon text-warning"></i>
+      <span class="font-bold">Dashboard</span>
+    </a>
+  </li> -->
+  
+  <li>
+    <a class="auto" ui-sref="app.message-pending-list">
+      <i class="fa fa-envelope icon text-danger"></i>
+      <span class="font-bold">Pending Messages</span>
+    </a>
+  </li>
+
+  <li>
+    <a class="auto" ui-sref="app.message-approved-list">
+      <i class="fa fa-envelope icon text-warning"></i>
+      <span class="font-bold">Approved Messages</span>
+    </a>
+  </li>
+
+  <li>
+    <a class="auto" ui-sref="app.message-featured-list">
+      <i class="fa fa-star icon text-success"></i>
+      <span class="font-bold">Featured Messages</span>
+    </a>
+  </li>
+
+  <div ng-if="tat_type == 'SUPER'">
+  <li class="line dk"></li>
+  <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+    <span >Administration & Management</span>
+  </li>
+  <li ng-class="{active:$state.includes('app.admin-edit') || $state.includes('app.admin-list') || $state.includes('app.admin-logs')}">
+    <a href class="auto">
+      <span class="pull-right text-muted">
+        <i class="fa fa-fw fa-angle-right text"></i>
+        <i class="fa fa-fw fa-angle-down text-active"></i>
+      </span>
+      <i class="glyphicon glyphicon-lock"></i>
+      <span >Admins</span>
+    </a>
+    <ul class="nav nav-sub dk">
+      
+      <li ui-sref-active="active">
+        <a ui-sref="app.admin-edit">
+          <span >New Admin</span>
+        </a>
+      </li>
+      <li ui-sref-active="active">
+        <a ui-sref="app.admin-list">
+          <span >Admin List</span>
+        </a>
+      </li>
+      <li ui-sref-active="active">
+        <a ui-sref="app.admin-logs">
+          <span >Admin Activity Logs</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+  </div>
+
+  <li class="line dk hidden-folded"></li>
+
+  <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">          
+    <span>Your Stuff</span>
+  </li>
+  <li>
+    <a ui-sref="app.profile-edit">
+      <i class="icon-user icon text-success-lter"></i>
+      <span>Profile</span>
+    </a>
+  </li>
+  <li>
+    <a ng-click="logout()">
+      <i class="icon-power icon text-danger-lter"></i>
+      <span>Logout</span>
+    </a>
+  </li>
+  
+</ul>
+<!-- / list -->

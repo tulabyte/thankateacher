@@ -1,0 +1,111 @@
+<div class="bg-light lter b-b wrapper-md">
+  <div class="pull-left">
+    <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+  </div>
+  <div class="clearfix"></div>
+</div>
+<div class="wrapper-md" ng-controller="MessageListController">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      List of APPROVED Messages
+    </div>
+    <div class="table-responsive">
+      <table datatable="ng" class="table table-striped m-b-none">
+        <thead>
+          <tr>
+            <th width="20%">Teacher Name</th>
+            <th width="15%">Submitted By</th>
+            <th width="20%">School</th>
+            <th width="15%">City/State</th>
+            <th width="10%">Date Approved</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="message in approved_messages">
+            <td> <i class="fa fa-star" ng-show="message.msg_is_featured"></i> {{message.msg_teacher_name}} </td>
+            <td> {{message.msg_sender_name}} </td>
+            <td> {{message.msg_school }} </td>
+            <td> {{message.msg_city}}/{{message.msg_state}} </td>
+            <td> {{message.msg_time_approved | amDateFormat:'DD/MMM/YYYY' }} </td>
+            <td>
+              <button class="btn btn-icon btn-sm btn-info" ng-click="openMessageModal(message)" tooltip="Message Details"><i class="fa fa-info"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.message-edit({id:message.msg_id})" tooltip="Edit Message"><i class="fa fa-pencil-square-o"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-success" ng-click="markFeatured(message)" tooltip="Mark as FEATURED" ng-if="featured_messages.length < 3 && !message.msg_is_featured"><i class="fa fa-star"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-danger" ng-if="!message.msg_is_disabled" ng-click="toggleMessage(message.msg_id, 'disable')" tooltip="Disable Message"><i class="fa fa-ban"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-warning" ng-if="message.msg_is_disabled" ng-click="toggleMessage(message.msg_id, 'enable')" tooltip="Enable Message"><i class="fa fa-thumbs-up"></i></button> 
+
+              <button class="btn btn-icon btn-sm btn-danger" ng-click="deleteMessage(message.msg_id)" tooltip="Delete Message"><i class="fa fa-trash"></i></button>
+              
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script type="text/ng-template" id="MessageModalContent.html">
+<div class="modal-body wrapper-lg">
+  <div class="row">
+    <h3 class="m-t-none m-b font-thin">Message Details</h3>
+    
+    <table class="table table-striped">
+      <tr>
+        <td width="30%">Teacher's Name</td>
+        <td><strong>{{message.msg_teacher_name}}</strong></td>
+      </tr>
+      <tr ng-show="message.msg_teacher_phone">
+        <td width="30%">Teacher's Phone</td>
+        <td><strong>{{message.msg_teacher_phone}}</strong></td>
+      </tr>
+      <tr ng-show="message.msg_teacher_email">
+        <td width="30%">Teacher's Email</td>
+        <td><strong>{{message.msg_teacher_email}}</strong></td>
+      </tr>
+      <tr>
+        <td width="30%">Message</td>
+        <td><strong>{{message.msg_message}}</strong></td>
+      </tr>
+      <tr ng-show="message.msg_class">
+        <td width="30%">Class</td>
+        <td><strong>{{message.msg_class}}</strong></td>
+      </tr>
+      <tr>
+        <td width="30%">City/State</td>
+        <td><strong>{{message.msg_city}}/{{message.msg_state}}</strong></td>
+      </tr>
+      <tr>
+        <td width="30%">Student's Name</td>
+        <td><strong>{{message.msg_sender_name}}</strong></td>
+      </tr>
+      <tr ng-show="message.msg_sender_phone">
+        <td width="30%">Student's Phone</td>
+        <td><strong>{{message.msg_sender_phone}}</strong></td>
+      </tr>
+      <tr ng-show="message.msg_sender_email">
+        <td width="30%">Student's Email</td>
+        <td><strong>{{message.msg_sender_email}}</strong></td>
+      </tr>
+      <tr>
+        <td width="30%">Date Submitted</td>
+        <td><strong>{{message.msg_time_submitted | amDateFormat:'DD/MMM/YYYY @ h:mm a'}}</strong></td>
+      </tr>
+      <tr>
+        <td width="30%">Date Approved</td>
+        <td><strong>{{message.msg_time_approved | amDateFormat:'DD/MMM/YYYY @ h:mm a'}}</strong></td>
+      </tr>
+      <tr>
+        <td width="30%">Approved By</td>
+        <td><strong>{{message.admin_name}}</strong></td>
+      </tr>
+    </table>
+
+    <button type="button" class="btn btn-danger pull-right text-uc m-t-n-xs" ng-click="close()"><strong>Close</strong></button>
+
+  </div>
+</div>
+</script>
+</div>

@@ -1,0 +1,51 @@
+<div class="bg-light lter b-b wrapper-md">
+  <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+</div>
+<div class="wrapper-md" ng-controller="AdminController">
+  <div class="row">
+    <div class="col-sm-10">
+      <div class="panel panel-default">
+        <div class="panel-heading font-bold">Admin's Details</div>
+        <div class="panel-body">
+          <form role="form" name="form">
+            <div class="form-group">
+              <label>Email address</label>
+              <input type="email" class="form-control" placeholder="Enter email" required ng-model="admin.admin_email">
+            </div>
+
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" class="form-control" placeholder="Password" required ng-model="admin.admin_password">
+            </div>
+
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" class="form-control" placeholder="Enter full name" required ng-model="admin.admin_name">
+            </div>
+
+            <div class="form-group">
+              <label>Level</label>
+              <select class="form-control" ng-model="admin.admin_level" required>
+                <option value="">- Select Level -</option>
+                <option value="REGULAR">REGULAR</option>
+                <option value="SUPER" ng-disabled="tat_type != 'SUPER'">SUPERADMIN</option>
+              </select>
+            </div>
+            
+            <button type="submit" class="btn btn-success" ng-click="editAdmin(admin)" ng-disabled='form.$invalid'> {{admin.admin_id ? 'Save' : 'Submit' }} </button>            
+
+            <button type="button" class="btn btn-default" ui-sref="app.admin-list">Back to List</button>
+
+            <button type="button" class="btn btn-danger" ng-if="admin.admin_id && !admin.admin_is_disabled" ng-click="disableAdmin(admin.admin_id)" >Disable</button>
+
+            <button type="button" class="btn btn-warning" ng-if="admin.admin_id  && admin.admin_is_disabled" ng-click="enableAdmin(admin.admin_id)" >Enable</button>
+
+          </form>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  
+</div>

@@ -1,0 +1,25 @@
+<div class="row">
+    <h3 class="m-t-none m-b font-thin">{{module.mod_id ? 'Edit' : 'Create'}} Module</h3>
+    <p><strong>{{module.mod_id ? 'Edit module in' : 'Create new module for'}} <u>{{course.course_title}}</u></strong></p>
+    <form role="form">
+      <div class="alert alert-danger" ng-hide="!error">{{error}}</div>
+      <div class="form-group">
+        <label>Module Title</label>
+        <input type="text" class="form-control" placeholder="Enter title" ng-model="module.mod_title" required>
+      </div>
+      <div class="form-group">
+        <label>Module Content</label>
+        <textarea required class="form-control" placeholder="Enter module description here" ng-model="module.mod_content"></textarea>
+      </div>
+      <div class="form-group col-md-3">
+        <label>Position/Priority</label>
+        <input type="number" class="form-control" ng-model="module.mod_position">
+      </div>
+
+      <div class="checkbox m-t-lg">
+        <button type="button" class="btn btn-success pull-right text-uc m-t-n-xs" ng-click="editModule(module)"><strong>Save</strong></button>
+
+        <button type="button" class="btn pull-right text-uc m-t-n-xs" ng-click="cancel()"><strong>Cancel</strong></button>              
+      </div>
+    </form>
+  </div>

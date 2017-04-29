@@ -1,0 +1,200 @@
+			<a id="home" class="in-page-link"></a>
+			
+			<section class="header header-1 fixed-header">
+		
+				<div class="background-image-holder">
+					<img alt="Background Image" class="background-image" ng-src="img/teacher-slide-bg.jpg">
+				</div>
+		
+				<div class="container">
+					<div class="row v-align-children">
+						<div class="col-md-5">
+							<h3 class="text-white">Take one minute to <br>
+							to thank that <br>
+							special Teacher</h3>
+							<h5 class="text-white">We want more people to look back and thank their teachers; they put a lot of energy into helping us get to where we are today.</h5>
+						</div>
+					
+						<div class="col-md-7">
+							<div class="inner" ng-show="show_success">
+								<div class="alert alert-success" role="alert">
+								  <h4>Message Submitted Successfully!</h4>
+								  <p>Thank you for thanking your teacher. Your message has been received and will be approved for display within the next 48 hours.</p>
+								  <p>Got another wonderful teacher to thank? No problem!</p>
+								  <p><a href="#" class="alert-link" ng-click="newMessage()">Send Another Message</a></p>
+								  
+								</div>
+
+							</div>
+							<div class="inner" ng-show="show_form">
+								<ul>
+									<li>
+										<i class="text-white icon-pen-streamline"></i>
+										<h5 class="text-white">
+											Drop a message for your teacher here</h5>
+									</li>
+								</ul>
+								<div class="row">
+									<form class="form-email" data-success="Thanks for your submission, we will be in touch shortly." data-error="Please fill all fields correctly.">
+										<div class="alert alert-danger" role="alert" ng-show="message_error">
+										  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										  {{message_error}}								  
+										</div>
+
+										<!-- Page 1 - Teacher & Student Info -->
+										<div ng-show="currentpage == 1">
+											<div class="col-md-6">
+												<input type="text" class="signup-name-field validate-required" placeholder="Your Teacher's Name" ng-model="message.teacher_name" required>
+
+												<input type="text" class="validate-email signup-email-field" placeholder="Teacher's Email (optional)" ng-model="message.teacher_email">
+
+												<input type="text" class="signup-name-field" placeholder="Teacher's Phone (optional)" ng-model="message.teacher_phone">
+											</div>
+											<div class="col-md-6">
+												<input type="text" class="signup-name-field validate-required" placeholder="Your Name" ng-model="message.sender_name" required>
+
+												<input type="text" class="signup-email-field validate-email" placeholder="Your Email (optional)" ng-model="message.sender_email">
+
+												<input type="text" class="signup-name-field" placeholder="Your Phone (optional)" ng-model="message.sender_phone">
+											</div>
+										</div>
+
+										<!-- Page 2 - School Info -->
+										<div ng-show="currentpage == 2">
+											<div class="col-md-6">
+												<select class="validate-required" ng-model="message.state" required>
+													<option value="">- State where he/she taught -</option>
+													<option ng-value="state.name" ng-repeat="state in states">{{state.name}}</option>
+												</select>
+
+												<input type="text" class="validate-required signup-email-field" placeholder="City/Town" ng-model="message.city" required>
+											</div>
+											<div class="col-md-6">
+												<input type="text" class="signup-name-field validate-required" placeholder="School/Institution" ng-model="message.school" required>
+
+												<input type="text" class="validate-required" placeholder="Class" ng-model="message.class">
+											</div>
+										</div>
+
+										<!-- Page 3 - Thank You Message -->
+										<div ng-show="currentpage == 3">
+											<div class="col-md-12">
+												<textarea class="validate-required" placeholder="Enter your 'Thank You' message here. Try to mention what you're thanking your teacher for and in what way he/she has inspired you to become who you are today." ng-model="message.message" required></textarea>
+											</div>
+										</div>
+
+										<!-- Navigation buttons -->
+										<div class="col-md-6" ng-show="currentpage > 1">
+											<input type="button" value="« Previous" ng-click="previous()">
+										</div>
+										<!-- Left or Right Spacer -->
+										<div class="col-md-6" ng-show="currentpage == 1">
+											
+										</div>
+										<div class="col-md-6" ng-show="currentpage < 3">
+											<input type="button" value="Next »" ng-click="next()">
+										</div>
+
+										
+										<!-- Submit Button -->
+										<div class="col-md-6" ng-show="currentpage == 3">
+											<input type="submit" value="Submit Message »" ng-click="submitMessage(message)">
+										</div>
+
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+			</section>			
+			
+			
+			<a id="featured" class="in-page-link"></a>
+			
+			
+			
+			<section class="testimonials testimonials-3 bg-secondary" ng-if="featured_messages.length > 0">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h6>A few selected Thank You messages</h6>
+						</div>
+					</div>
+				
+					<div class="row">
+						<div class="col-sm-4 text-center testimonial" ng-repeat="message in featured_messages">
+							<p class="lead">
+								"{{message.msg_message}}"</p>
+							<p>
+								<em>— {{message.msg_sender_name}} to {{message.msg_teacher_name}} <br>{{message.msg_school}}, {{message.msg_city}}</em>
+							</p>
+						</div>
+					
+					</div>
+				</div>
+			</section>			
+			
+			
+			<a id="faq" class="in-page-link"></a>
+			
+			<section class="faq faq-1">
+				<div class="container">
+					
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h6>Message Archive</h6>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-12">
+							
+							<div class="panel panel-default">
+							    <div class="table-responsive">
+							      <table datatable="ng" class="table table-striped m-b-none">
+							        <thead>
+							          <tr>
+							            <th width="20%">Teacher Name</th>
+							            <th width="20%">Submitted By</th>
+							            <th width="20%">School</th>
+							            <th width="20%">City/State</th>
+							            <th width="10%">Date Submitted</th>
+							          </tr>
+							        </thead>
+							        <tbody>
+							          <tr ng-repeat="message in messages">
+							            <td> {{message.msg_teacher_name}} </td>
+							            <td> {{message.msg_sender_name}} </td>
+							            <td> {{message.msg_school }} </td>
+							            <td> {{message.msg_city}}/{{message.msg_state}} </td>
+							            <td> {{message.msg_time_submitted | amDateFormat:'DD/MMM/YYYY' }} </td>
+							            
+							          </tr>
+							        </tbody>
+							      </table>
+							    </div>
+						  	</div>
+					
+						</div>
+					
+					</div>
+				
+				</div>
+			</section>
+			
+			
+			<section class="cta cta-7">
+				<div class="background-image-holder">
+					<img alt="Background Image" class="background-image" src="img/teacher-section-bg.jpg">
+				</div>
+			
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h4 class="text-white">Still have questions? Tweet <a target="_blank" href="https://twitter.com/thankateachernigeria" style="color:#fff; text-decoration: underline;">@thankateachernigeria</a>&nbsp;for answers</h4>
+						</div>
+					</div>
+				</div>
+			</section>

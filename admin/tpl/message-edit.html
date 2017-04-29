@@ -1,0 +1,65 @@
+<div class="bg-light lter b-b wrapper-md">
+  <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+</div>
+<div class="wrapper-md" ng-controller="MessageListController">
+  <div class="row">
+    <div class="col-sm-10">
+      <div class="panel panel-default">
+        <div class="panel-heading font-bold">Message Details</div>
+        <div class="panel-body">
+
+<form role="form" name="form">
+            <input type="hidden" class="form-control" required ng-model="message.msg_id">
+            <div class="form-group">
+              <label>Teacher's Name</label>
+              <input type="text" class="form-control" required ng-model="message.msg_teacher_name">
+            </div>
+
+            <div class="form-group">
+              <label>Teacher's Phone</label>
+              <input type="text" class="form-control" required ng-model="message.msg_teacher_phone">
+            </div>
+
+            <div class="form-group">
+              <label>Teacher's Email</label>
+              <input type="email" class="form-control" required ng-model="message.msg_teacher_email">
+            </div>
+
+            <div class="form-group">
+              <label>Class</label>
+              <input type="text" class="form-control" required ng-model="message.msg_class">
+            </div>
+
+            <div class="form-group">
+              <label>Message</label>
+              <textarea class="form-control" rows="5" required ng-model="message.msg_message"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Student's Name</label>
+              <input type="text" class="form-control" required ng-model="message.msg_sender_name">
+            </div>
+            
+            <div class="form-group">
+              <label>Student's Phone</label>
+              <input type="text" class="form-control" required ng-model="message.msg_sender_phone">
+            </div>
+            
+            <div class="form-group">
+              <label>Student's Email</label>
+              <input type="email" class="form-control" required ng-model="message.msg_sender_email">
+            </div>
+            
+            
+            <button type="submit" class="btn btn-success" ng-click="updateMessage(message)"> {{message.msg_id ? 'Save' : 'Submit' }} </button>            
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  
+</div>

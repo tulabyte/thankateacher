@@ -1,0 +1,46 @@
+<div class="bg-light lter b-b wrapper-md">
+  <div class="pull-left">
+    <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+  </div>
+  <div class="pull-right">
+    <button class="btn m-b-xs btn-success btn-addon" ui-sref="app.admin-edit"><i class="fa fa-plus"></i>New Admin</button>
+  </div>
+  <div class="clearfix"></div>
+</div>
+<div class="wrapper-md" ng-controller="AdminController">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      System Admins
+    </div>
+    <div class="table-responsive">
+      <table datatable="ng" class="table table-striped m-b-none">
+        <thead>
+          <tr>
+            <th width="20%">Name</th>
+            <th width="20%">Email</th>
+            <th width="15%">Level</th>
+            <th width="15%">Created</th>
+            <th width="15%">Last Login</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="admin in admins">
+            <td> {{admin.admin_name}} </td>
+            <td> {{admin.admin_email}} </td>
+            <td> {{admin.admin_level}} </td>
+            <td> {{admin.admin_date_created | date }} </td>
+            <td> <span am-time-ago="admin.admin_last_login"></span> </td>
+            <td>
+              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.admin-edit({id:admin.admin_id})" tooltip="Edit Admin"><i class="fa fa-edit"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-danger" ng-if="admin.admin_id && !admin.admin_is_disabled" ng-click="disableAdmin(admin.admin_id)" tooltip="Disable Admin"><i class="fa fa-ban"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-warning" ng-if="admin.admin_id  && admin.admin_is_disabled" ng-click="enableAdmin(admin.admin_id)" tooltip="Enable Admin"><i class="fa fa-thumbs-up"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
