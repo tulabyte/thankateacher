@@ -2,7 +2,7 @@ app.factory("Data", ['$http', '$rootScope',
     function ($http, $rootScope) { // This service connects to our REST API
 
         // var serviceBase = 'api/default/index.php/';
-         var serviceBase = 'http://localhost/thankateacher/api/default/index.php/';
+         var serviceBase = 'http://localhost/thank/thankateacher/api/default/index.php/';
         // var serviceBase = 'http://thankateacher.nigerianteachingawards.org/api/default/index.php/';
 
         var obj = {};

@@ -1006,3 +1006,109 @@ $app->get('/removeFeaturedMessage', function() use ($app) {
     }
 
 });
+
+// create card
+$app->post('/createNewCard', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['card_title', 'card_description', 'card_value', 'card_themeColor', 'card_image'],$r->card);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $card_title = $db->purify($r->card->card_title);
+    $card_description = $db->purify($r->card->card_description);
+    $card_value = $db->purify($r->card->card_value);
+    $card_themeColor = $db->purify($r->card->card_themeColor);
+    $card_image = ($r->card->card_image);
+    //check if card already exists with same title
+    $iscardExists = $db->getOneRecord("SELECT 1 FROM card_design WHERE card_title='$card_title'");
+    if(!$iscardExists){
+        //the title has not yet been used
+        //$r->card->password = passwordHash::hash($password);
+        $table_name = "card_design";
+        $column_names = ['card_title', 'card_description', 'card_value', 'card_themeColor', 'card_image'];
+        $values = [$card_title, $card_description, $card_value, $card_themeColor,$card_image,];
+
+        $result = $db->insertToTable($values, $column_names, $table_name);
+
+        if ($result != NULL) {
+            $response["status"] = "success";
+            $response["message"] = "card created successfully";
+            $response["card_id"] = $result;
+
+            //log action
+/*            $log_details = "Created New card: $card_title (ID: $result)";
+            $db->logAction($log_details);            
+*/
+            echoResponse(200, $response);
+        } else {
+            $response["status"] = "error";
+            $response["message"] = "Failed to create card. Please try again";
+            echoResponse(201, $response);
+        }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "card with the provided title already exists, please try another!";
+        echoResponse(201, $response);
+    }
+});
+
+//get all cards
+$app->get('/getAllCards', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    
+$cards = $db->getRecordset("SELECT card_id, card_title, card_description, card_image, card_themeColor, card_value, card_is_disabled, count(msg_card_id) as card_count
+            FROM card_design 
+            left join message
+            on card_id = msg_card_id
+            group by card_id");
+
+  if($cards) {
+        //found course, return success result
+
+        $response['cards'] = $cards;
+        $response['status'] = "success";
+        $response["message"] = "Latest Cards Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Cards!";
+        echoResponse(201, $response);
+    }
+});
+
+//getCardDetails
+$app->get('/getCardDetails', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $card_id = $db->purify($app->request->get('id'));
+    
+$card = $db->getOneRecord("SELECT card_title, card_description, card_image, card_themeColor, card_value, count(msg_card_id) as card_count
+            FROM card_design 
+            left join message
+            on card_id = msg_card_id
+            group by card_id
+            HAVING card_id = '$card_id' ");
+
+$messages = $db->getRecordset("SELECT msg_sender_name, msg_sender_phone, msg_message, msg_teacher_name, msg_teacher_phone, msg_time_submitted
+            FROM message 
+            WHERE msg_card_id = '$card_id' ");
+
+  if($card) {
+        //found card, return success result
+
+        $response['card'] = $card;
+        $response['messages'] = $messages;
+        $response['status'] = "success";
+        $response["message"] = "Card Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Cards!";
+        echoResponse(201, $response);
+    }
+});
