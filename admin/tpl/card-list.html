@@ -2,6 +2,9 @@
   <div class="pull-left">
     <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
   </div>
+  <div class="pull-right">
+        <button class="btn m-b-xs btn-success btn-addon" ui-sref="app.create-card"><i class="fa fa-plus"></i>New Card</button>
+    </div>
   <div class="clearfix"></div>
 </div>
 <div class="wrapper-md" ng-controller="CardController">
@@ -31,7 +34,7 @@
             <td>
               <button class="btn btn-icon btn-sm btn-info" ui-sref="app.card-details({id:card.card_id})" tooltip="Card Details"><i class="fa fa-info"></i></button>
 
-              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.card-edit({id:card.card_id})" tooltip="Edit Card"><i class="fa fa-pencil-square-o"></i></button>
+              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.edit-card({id:card.card_id})" tooltip="Edit Card"><i class="fa fa-pencil-square-o"></i></button>
 
               <button class="btn btn-icon btn-sm btn-danger" ng-if="!card.card_is_disabled" ng-click="toggleCard(card.card_id, 'disable')" tooltip="Disable Card"><i class="fa fa-ban"></i></button>
 

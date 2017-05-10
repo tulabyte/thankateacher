@@ -632,6 +632,10 @@ $app->get('/toggleItem', function() use ($app) {
         case 'message':
             $prefix = 'msg';
             break;
+
+        case 'card_design':
+            $prefix = 'card';
+            break;
     }
 
     $table_to_update = $item_type;
@@ -1020,28 +1024,34 @@ $app->post('/createNewCard', function() use ($app) {
     $card_description = $db->purify($r->card->card_description);
     $card_value = $db->purify($r->card->card_value);
     $card_themeColor = $db->purify($r->card->card_themeColor);
-    $card_image = ($r->card->card_image);
+    $card_image = $db->purify($r->card->card_image);
+
     //check if card already exists with same title
     $iscardExists = $db->getOneRecord("SELECT 1 FROM card_design WHERE card_title='$card_title'");
     if(!$iscardExists){
         //the title has not yet been used
         //$r->card->password = passwordHash::hash($password);
         $table_name = "card_design";
-        $column_names = ['card_title', 'card_description', 'card_value', 'card_themeColor', 'card_image'];
-        $values = [$card_title, $card_description, $card_value, $card_themeColor,$card_image,];
+        $column_names = ['card_title', 'card_description', 'card_value', 'card_themeColor'];
+        $values = [$card_title, $card_description, $card_value, $card_themeColor];
 
         $result = $db->insertToTable($values, $column_names, $table_name);
 
         if ($result != NULL) {
-            $response["status"] = "success";
-            $response["message"] = "card created successfully";
-            $response["card_id"] = $result;
-
-            //log action
-/*            $log_details = "Created New card: $card_title (ID: $result)";
-            $db->logAction($log_details);            
-*/
-            echoResponse(200, $response);
+            $card_image_name = explode('.', $card_image);
+            $card_image_temp_name = $card_image_name[0];
+            $card_image_temp_ext = $card_image_name[1];
+            $card_image_fullname = $result.'.'.$card_image_temp_ext;
+            $table_to_update = "card_design";
+            $columns_to_update = ['card_image'=>$card_image_fullname];
+            $where_clause = ['card_id'=>$result];
+            $update_result = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);
+                if ($update_result != NULL) {
+                        $response["status"] = "success";
+                        $response["message"] = "card created successfully";
+                        $response["card_name"] = $card_image_fullname;
+                        echoResponse(200, $response);
+                    }
         } else {
             $response["status"] = "error";
             $response["message"] = "Failed to create card. Please try again";
@@ -1053,6 +1063,51 @@ $app->post('/createNewCard', function() use ($app) {
         echoResponse(201, $response);
     }
 });
+
+// update card
+$app->post('/updateCard', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['card_id','card_title', 'card_description', 'card_value', 'card_themeColor'],$r->card);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $card_title = $db->purify($r->card->card_title);
+    $card_description = $db->purify($r->card->card_description);
+    $card_value = $db->purify($r->card->card_value);
+    $card_themeColor = $db->purify($r->card->card_themeColor);
+    $card_id = $db->purify($r->card->card_id);
+    $card_image = ($r->card->card_image);
+    $card_image_name = explode('.', $card_image);
+    $card_image_temp_name = $card_image_name[0];
+    $card_image_temp_ext = $card_image_name[1];
+    $card_image_fullname = $card_id.'.'.$card_image_temp_ext;
+    //check if card already exists with same title
+    $iscardExists = $db->getOneRecord("SELECT 1 FROM card_design WHERE card_id='$card_id'");
+    if($iscardExists){
+        $table_to_update = "card_design";
+        $columns_to_update = ['card_title'=>$card_title, 'card_description'=>$card_description, 'card_value'=>$card_value, 'card_themeColor'=>$card_themeColor, 'card_image'=>$card_image_fullname];
+        $where_clause = ['card_id'=>$card_id];
+        $result = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);
+        
+        if ($result) {
+            $response["status"] = "success";
+            $response["message"] = "card updated successfully";
+            $response["card_name"] = $card_image_fullname;
+            echoResponse(200, $response);
+        } else {
+            $response["status"] = "error";
+            $response["message"] = "Failed to update card. Please try again";
+            echoResponse(201, $response);
+        }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "card does not exists!";
+        echoResponse(201, $response);
+    }
+});
+
 
 //get all cards
 $app->get('/getAllCards', function() use ($app) {
@@ -1087,7 +1142,7 @@ $app->get('/getCardDetails', function() use ($app) {
     $db = new DbHandler();
     $card_id = $db->purify($app->request->get('id'));
     
-$card = $db->getOneRecord("SELECT card_title, card_description, card_image, card_themeColor, card_value, count(msg_card_id) as card_count
+$card = $db->getOneRecord("SELECT card_id, card_title, card_description, card_image, card_themeColor, card_value, count(msg_card_id) as card_count
             FROM card_design 
             left join message
             on card_id = msg_card_id
@@ -1112,3 +1167,6 @@ $messages = $db->getRecordset("SELECT msg_sender_name, msg_sender_phone, msg_mes
         echoResponse(201, $response);
     }
 });
+
+
+

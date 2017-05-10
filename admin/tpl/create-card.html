@@ -1,5 +1,7 @@
 <div class="bg-light lter b-b wrapper-md">
-  <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+  <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}}    <span class="pull-right">
+      <button class="btn m-b-xs btn-success btn-addon" ui-sref="app.create-card"><i class="fa fa-plus"></i>New Card</button>
+   </span></h1>
 </div>
 <div class="wrapper-md" ng-controller="CardController">
   <div class="row">
@@ -27,13 +29,20 @@
               <input type="radio" ng-model="card.card_themeColor" value="black"> Dark
               <input type="radio" ng-model="card.card_themeColor" value="white" > Light <br />
             </div>
-            <div class="form-group">
+
+            <div class="form-group" ng-if="card.card_image">
+              <label>
+              <strong>Update Card Image</strong></label>
+              <input type="checkbox" ng-model="card.card_edit">
+            </div>
+
+            <div class="form-group" ng-show="card.card_edit || !card.card_id">
               <label>
               <strong>Upload Card</strong></label>
               <input type="file" class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
             ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100"></div>
 
-            <button type="submit" class="btn btn-success" ng-click="createCard(card, file)" ng-disabled='form.$invalid'> {{admin.ad_id ? 'Create Card' : 'Submit' }} </button>  
+            <button type="submit" class="btn btn-success" ng-click="createCard(card, file)" ng-disabled='form.$invalid'> {{card.ad_id ? 'Create Card' : 'Update' }} </button>  
 
             </div>
           </form>
@@ -42,7 +51,7 @@
     </div>
 
 <!-- sample preview for card -->
-        <div class="col-sm-8" ng-show="file">
+        <div class="col-sm-8" ng-if="file">
                 <div ngf-background="file" style="width: 100%;
                 background-position: center;
                 background-repeat: no-repeat;
@@ -56,8 +65,26 @@
                           {{demo_sender_name}}<br/>
                           {{demo_date | date:"MM/dd/yyyy"}}. 
                     </p></h3>
-                      </div>
+          </div>
+
         </div>
+                    <!-- show preview in edit mode -->
+              <div class="col-sm-8" ng-if="card.card_image && !file">
+                <div style="width: 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-image: url(./img/card-images/{{card.card_image}});
+                height: 500px;">
+                  <h2 style="color:{{card.card_themeColor}}; padding-top: 125px; padding-left: 60px;">Dear {{demo_teacher_name}},</h2>
+                    <h3><p style="color:{{card.card_themeColor}}; padding-top: 10px; padding-left: 60px; padding-right: 80px;">
+                    {{demo_message_body}}
+                    </p>                    
+                    <p style="color:{{card.card_themeColor}}; padding-top: 10px; padding-left: 420px; padding-right: 80px;">Kind Regards<br>
+                          {{demo_sender_name}}<br/>
+                          {{demo_date | date:"MM/dd/yyyy"}}. 
+                    </p></h3>
+                      </div>
     
   </div>
   

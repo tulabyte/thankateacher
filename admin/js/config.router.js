@@ -157,6 +157,19 @@ angular.module('app')
               })
 
               // create-card
+              .state('app.edit-card', {
+                  url: '/create-card/:id',
+                  templateUrl: 'tpl/create-card.html',
+                  data: {pageTitle: 'Edit Card'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/CardController.js');
+                      }]
+                  }
+              })
+
+              // create-list
               .state('app.card-list', {
                   url: '/card-list',
                   templateUrl: 'tpl/card-list.html',
@@ -169,7 +182,7 @@ angular.module('app')
                   }
               })
 
-                // message-edit
+                // card-details
               .state('app.card-details', {
                   url: '/card-details/:id',
                   templateUrl: 'tpl/card-details.html',
