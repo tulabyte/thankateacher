@@ -1,0 +1,46 @@
+<div class="bg-light lter b-b wrapper-md">
+  <div class="pull-left">
+    <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+  </div>
+  <div class="clearfix"></div>
+</div>
+<div class="wrapper-md" ng-controller="CardController">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      List of Cards
+    </div>
+    <div class="table-responsive">
+      <table datatable="ng" class="table table-striped m-b-none">
+        <thead>
+          <tr>
+            <th width="25%">Thumbnail</th>
+            <th width="10%">Title</th>
+            <th width="25%">Description</th>
+            <th width="10%">Value</th>
+            <th width="10%">Usage Count</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="card in cards">
+            <td><a class="thumbnail"><img src="./img/card-images/{{card.card_image}}"></td></a>
+            <td> {{card.card_title}} </td>
+            <td> {{card.card_description}} </td>
+            <td> {{card.card_value}} </td>
+            <td> {{card.card_count}} </td>
+            <td>
+              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.card-details({id:card.card_id})" tooltip="Card Details"><i class="fa fa-info"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.card-edit({id:card.card_id})" tooltip="Edit Card"><i class="fa fa-pencil-square-o"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-danger" ng-if="!card.card_is_disabled" ng-click="toggleCard(card.card_id, 'disable')" tooltip="Disable Card"><i class="fa fa-ban"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-warning" ng-if="card.card_is_disabled" ng-click="toggleCard(card.card_id, 'enable')" tooltip="Enable Card"><i class="fa fa-thumbs-up"></i></button> 
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

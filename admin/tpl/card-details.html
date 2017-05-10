@@ -1,0 +1,83 @@
+<div class="hbox hbox-auto-xs hbox-auto-sm" ng-controller="CardController">
+   <div class="col">
+       <div class="wrapper-lg bg-white-opacity">
+       <!-- begining of row -->
+        <div class="row m-t">
+           <!-- begining og 1st column -->
+           <div class="col-sm-7">
+                        <a class="pull-left m-r thumbnail">
+                          <img src="./img/card-images/{{card.card_image}}" class="img-rounded">
+                        </a>
+                 <div class="clear m-b">
+                     <div class="m-b m-t-sm">
+                          <span class="h3 text-black">{{card.card_title}}</span><br /><br />
+                          <span class="h5 text-black">{{card.card_description}}</span>
+                     </div>
+                 </div>
+           </div>
+                      <!-- end of column 7 --> 
+                      <!-- 2nd column -->    
+             <div class="col-sm-5">
+                   <div class="pull-right pull-none-xs text-center">
+                     <a href class="m-b-md inline m">
+                       <span class="h3 block font-bold">N{{card.card_value}}</span>
+                       <small>Value</small>
+                     </a>
+                     </div>
+                     <div class="pull-right pull-none-xs text-center">
+                     <a href class="m-b-md inline m">
+                       <span class="h3 block font-bold">{{messages.length}}</span>
+                       <small>Total Messages</small>
+                     </a>
+                     </div>
+              </div>
+                <!-- end of column -->  
+         </div>
+<!--       end of row -->
+      </div>
+<!--       end of wrapper -->
+   <!-- beginning of tab -->
+    <div class="wrapper bg-white b-b">
+
+    <tabset class="nav-tabs-alt" justified="true">
+      <tab>
+        <tab-heading>
+          <i class="glyphicon glyphicon-user text-md text-muted wrapper-sm"></i> Messages
+        </tab-heading>
+            <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading h4" style="height: 50px;" ng-show="messages.length > 0 ">Latest Messages</div>
+              <div class="panel-heading h4" style="height: 50px;" ng-hide="messages.length > 0 ">No Message has been sent with this Card</div>
+
+              <!-- Table -->
+              <table class="table table-striped m-b-none" ng-show="messages.length > 0">
+              <thead>
+                <tr>
+                <th width="12%">Student Name </th>
+                <th width="12%">Student Number</th>
+                <th width="35%">Message</th>
+                <th width="12%">Teacher Name</th>
+                <th width="12%">Teacher Number</th>
+                <th width="13%">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="message in messages">
+                <td>{{message.msg_sender_name}}</td>
+                <td>{{message.msg_sender_phone}}</td>
+                <td>{{message.msg_message}}</td>
+                <td>{{message.msg_teacher_name}}</td>
+                <td>{{message.msg_teacher_phone}}</td>
+                <td>{{message.msg_time_submitted | date :'yyyy-MM-dd'}}</td>
+                </tr>
+              </tbody>
+                
+              </table>
+            </div>
+      </tab>
+    </tabset>
+ <!--    end of tab -->
+      </div>
+    </div>
+    </div>
+

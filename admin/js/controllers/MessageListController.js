@@ -43,7 +43,7 @@ app.controller('MessageListController', ['$scope', '$rootScope', '$modal', 'FTAF
       });
     };
 
-    // deny message
+    // approve message
     $scope.approveMessage = function(message) {
       if(!confirm("Are you sure you want to APPROVE this message? THIS WILL AUTOMATICALLY MAKE THIS MESSAGE VISIBLE ON THE FRONTEND!!!")) {
         return false;

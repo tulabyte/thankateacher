@@ -1012,29 +1012,3 @@ $app->get('/removeFeaturedMessage', function() use ($app) {
     }
 
 });
-
-/* --START-- Actions by Yemi Tula starting May 8 */
-
-// get active card designs
-$app->get('/getActiveCardDesigns', function() use ($app) {
-    $response = array();
-
-    $db = new DbHandler();
-    // $msg_id = $db->purify($app->request->get('id'));
-
-    $cards = $db->getRecordset("SELECT * FROM card_design WHERE card_is_disabled IS NULL");
-
-    if($cards) {
-        $response['status'] = "success";
-        $response['cards'] = $cards;
-        $response["message"] = count($cards) . " card designs found!";
-        echoResponse(200, $response);
-    } else {
-        $response['status'] = "error";
-        $response["message"] = "No card found in database!";
-        echoResponse(201, $response);
-    }
-
-});
-
-/* --END-- Actions by Yemi Tula */

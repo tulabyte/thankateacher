@@ -142,6 +142,46 @@ angular.module('app')
                   }
               })
 
+
+              // create-card
+              .state('app.create-card', {
+                  url: '/create-card',
+                  templateUrl: 'tpl/create-card.html',
+                  data: {pageTitle: 'Create Card'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/CardController.js');
+                      }]
+                  }
+              })
+
+              // create-card
+              .state('app.card-list', {
+                  url: '/card-list',
+                  templateUrl: 'tpl/card-list.html',
+                  data: {pageTitle: 'Card List'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/CardController.js');
+                      }]
+                  }
+              })
+
+                // message-edit
+              .state('app.card-details', {
+                  url: '/card-details/:id',
+                  templateUrl: 'tpl/card-details.html',
+                  data: {pageTitle: 'Card Details'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/CardController.js');
+                      }]
+                  }
+              })
+
               // message-edit
               .state('app.message-edit', {
                   url: '/message-edit/:id',
