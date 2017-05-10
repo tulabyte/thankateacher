@@ -872,13 +872,14 @@ $app->post('/createMessage', function() use ($app) {
     $city = $db->purify($r->message->city);
     $class = $r->message->class? $db->purify($r->message->class) : NULL;
     $message = $db->purify($r->message->message);
+    $card_id = isset($r->message->msg_card_id)? $db->purify($r->message->msg_card_id) : NULL;
     $time_submitted = date("Y-m-d h:i:s");
     $status = 'PENDING';
 
     //$r->admin->password = passwordHash::hash($password);
     $table_name = "message";
-    $column_names = ['msg_teacher_name','msg_teacher_email','msg_teacher_phone','msg_sender_name','msg_sender_email', 'msg_sender_phone', 'msg_school', 'msg_state', 'msg_city', 'msg_class', 'msg_message', 'msg_time_submitted', 'msg_status'];
-    $values = [$teacher_name,$teacher_email,$teacher_phone,$sender_name,$sender_email, $sender_phone, $school, $state, $city, $class, $message, $time_submitted, $status];
+    $column_names = ['msg_teacher_name','msg_teacher_email','msg_teacher_phone','msg_sender_name','msg_sender_email', 'msg_sender_phone', 'msg_school', 'msg_state', 'msg_city', 'msg_class', 'msg_message', 'msg_time_submitted', 'msg_status', 'msg_card_id'];
+    $values = [$teacher_name,$teacher_email,$teacher_phone,$sender_name,$sender_email, $sender_phone, $school, $state, $city, $class, $message, $time_submitted, $status, $card_id];
 
     $result = $db->insertToTable($values, $column_names, $table_name);
 
@@ -895,6 +896,8 @@ $app->post('/createMessage', function() use ($app) {
             $to[] = $email['admin_email'];
         }
 
+        $cardline = ($card_id) ? "<p>NOTE: This message will be sent in a card</p>" : NULL;
+
         //send email notification to admin
         $swiftmailer = new mySwiftMailer();
         $subject = "New Thank You message submitted!";
@@ -908,6 +911,9 @@ City/State: $city/$state <br>
 Message:
 $message
 </p>
+
+$cardline
+
 <p>This message is awaiting approval. Please login to the Admin Backend to approve this message.</p>
 <p>NOTE: please DO NOT REPLY to this email.</p>
 <p><br><strong>Thank A Teacher</strong></p>";
@@ -1006,3 +1012,29 @@ $app->get('/removeFeaturedMessage', function() use ($app) {
     }
 
 });
+
+/* --START-- Actions by Yemi Tula starting May 8 */
+
+// get active card designs
+$app->get('/getActiveCardDesigns', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    // $msg_id = $db->purify($app->request->get('id'));
+
+    $cards = $db->getRecordset("SELECT * FROM card_design WHERE card_is_disabled IS NULL");
+
+    if($cards) {
+        $response['status'] = "success";
+        $response['cards'] = $cards;
+        $response["message"] = count($cards) . " card designs found!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "No card found in database!";
+        echoResponse(201, $response);
+    }
+
+});
+
+/* --END-- Actions by Yemi Tula */

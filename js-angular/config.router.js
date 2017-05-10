@@ -8,6 +8,7 @@ angular.module('app')
     [          '$rootScope', '$state', '$stateParams', 'Data', 
       function ($rootScope,   $state,   $stateParams, Data) {
                     
+          console.log('router!');
 
           // convert date string to JavaScript date
           $rootScope.makeDate = function(string) {
@@ -32,6 +33,14 @@ angular.module('app')
                   templateUrl: 'tpl/home.html',
                   cache: false,
                   controller: 'HomeController'
+              })
+
+              .state('card', {
+                  url: '/card',
+                  data: {pageTitle: 'Send a Card'},
+                  templateUrl: 'tpl/card.html',
+                  cache: false,
+                  controller: 'CardController'
               })
 
               .state('archive', {

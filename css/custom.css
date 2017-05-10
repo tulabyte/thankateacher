@@ -92,3 +92,18 @@ textarea {
 .ng-table-pager .btn-group {
   margin-top: 20px !important;
 }
+
+.black {
+  color: black;
+}
+
+.white {
+  color: white;
+}
+
+.card-view {
+  padding: 100px 300px 100px 100px;
+  height: 600px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}

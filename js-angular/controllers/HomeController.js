@@ -16,8 +16,10 @@ app
   };
 }])
 
-  .controller('HomeController', ['$scope', '$window', 'Data', '$rootScope', '$http', 'NgTableParams', '$modal',
-    function(              $scope,  $window, Data, $rootScope, $http, NgTableParams, $modal) {
+  .controller('HomeController', ['$scope', '$stateParams', '$window', 'Data', '$rootScope', '$http', 'NgTableParams', '$modal', '$cookieStore',
+    function(              $scope, $stateParams, $window, Data, $rootScope, $http, NgTableParams, $modal, $cookieStore) {
+      
+      console.log('home controller!');
       
       // modal for message
       $scope.openMessageModal = function (message = null) {
@@ -46,13 +48,19 @@ app
 
       // Start New Message
       $scope.newMessage = function () {
-      	$scope.message = {};
+      	$cookieStore.remove('message');
+        $scope.message = {};
       	$scope.show_success = false;
       	$scope.message_error = '';
       	$scope.currentpage = 1;
       	$scope.show_form = true;
-            $scope.submit_clicked = false;
+        $scope.submit_clicked = false;
       };
+
+      if($stateParams.success) {
+        $scope.show_success = true;
+        $scope.show_form = false;
+      }
 
       $scope.featured_messages = [];
 
@@ -63,8 +71,17 @@ app
       	console.log(results);
       	$scope.states = results.data;
 
-            // initialize
-            $scope.newMessage();
+            if($cookieStore.get('message')) {
+              $scope.message = $cookieStore.get('message');
+              $scope.show_success = false;
+              $scope.message_error = '';
+              $scope.currentpage = 1;
+              $scope.show_form = true;
+              $scope.submit_clicked = false;
+            } else {
+              // initialize
+              $scope.newMessage();
+            }
 
             // get list of messages for archive
             Data.get('getApprovedMessageList').then(function(results) {
@@ -84,8 +101,6 @@ app
       		$scope.featured_messages = results.featured_messages;
       	}
       });
-
-      
       
       // Next
       $scope.next = function() {
@@ -113,23 +128,47 @@ app
 
       // Submit Message
       $scope.submitMessage = function(message) {
-      	$scope.submit_clicked = true;
-            // console.log('submit clicked!');
-            // return false;
-            Data.post('createMessage', { message: message }).then(function(results) {
-      		console.log(results);
-      		if(results.status == "success") {
-      			// clear message object 
-      			$scope.message = {};
-      			// show success message and hide form
-      			$scope.show_success = true;
-      			$scope.show_form = false;
-      		} else {
-      			// show error message
-      			$scope.message_error = results.message;
-                        $scope.submit_clicked = false;
-      		}
-      	});
+      	// validate
+        if(!message || !message.message) {
+          alert("Please enter your message!")
+          return false;
+        }
+
+        $scope.submit_clicked = true;
+        // console.log('submit clicked!');
+        // return false;
+
+        if(confirm("Would you like to Send a Card to your Teacher?")) {
+          if(message.teacher_email !== null && message.teacher_email !== undefined) {
+            // store the message in cookies
+            $cookieStore.put('message', message);
+            // move to the card selection view
+            console.log('Going to Card page...');
+            $window.location.href = "http://thankateacher.nigerianteachingawards.org/card.html#/card";
+          } else {
+            //let user know teacher email is required and switch to that page
+            alert("To send a card, you need to provide your teacher's email!");
+            $scope.submit_clicked = false;
+            $scope.currentpage = 1;
+            return false;
+          }
+        } else {
+          Data.post('createMessage', { message: message }).then(function(results) {
+          console.log(results);
+            if(results.status == "success") {
+              // clear message object 
+              $scope.message = {};
+              // show success message and hide form
+              $scope.show_success = true;
+              $scope.show_form = false;
+            } else {
+              // show error message
+              $scope.message_error = results.message;
+                $scope.submit_clicked = false;
+            }
+          });
+        }
+        
       }
 
   }])
