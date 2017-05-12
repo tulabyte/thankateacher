@@ -72,16 +72,41 @@
   <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">          
     <span>Cards</span>
   </li>
+    <li>
+    <a ui-sref="app.create-card">
+      <i class="fa fa-credit-card icon text-success-lter"></i>
+      <span>Create Card</span>
+    </a>
+  </li>
+
   <li>
     <a ui-sref="app.card-list">
-      <i class="icon-user icon text-success-lter"></i>
+      <i class="fa fa-credit-card icon text-warning-lter"></i>
       <span>Card List</span>
     </a>
   </li>
+
+    <li class="line dk hidden-folded"></li>
+
+  <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">          
+    <span>Pins</span>
+  </li>
+  <li>
+    <a ui-sref="app.pin-gen">
+      <i class="fa fa-key icon text-success-lter"></i>
+      <span>Generate Pin</span>
+    </a>
+  </li>
     <li>
-    <a ui-sref="app.create-card">
-      <i class="icon-user icon text-success-lter"></i>
-      <span>Create Card</span>
+    <a ui-sref="app.pin-unused-list">
+      <i class="fa fa-key icon text-warning-lter"></i>
+      <span>Unused Pin</span>
+    </a>
+  </li>
+      <li>
+    <a ui-sref="app.pin-used-list">
+      <i class="fa fa-key icon text-danger-lter"></i>
+      <span>Used Pin</span>
     </a>
   </li>
 

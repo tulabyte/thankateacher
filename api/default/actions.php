@@ -636,6 +636,10 @@ $app->get('/toggleItem', function() use ($app) {
         case 'card_design':
             $prefix = 'card';
             break;
+
+        case 'pincode':
+            $prefix = 'pin';
+            break;            
     }
 
     $table_to_update = $item_type;
@@ -1169,4 +1173,125 @@ $messages = $db->getRecordset("SELECT msg_sender_name, msg_sender_phone, msg_mes
 });
 
 
+//getPinDetails
+$app->get('/getPinDetails', function() use ($app) {
+    $response = array();
 
+    $db = new DbHandler();
+    $pin_id = $db->purify($app->request->get('id'));
+    
+$pin = $db->getOneRecord("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled, msg_message, msg_teacher_name, msg_teacher_phone, msg_sender_name, msg_sender_phone
+            FROM pincode 
+            left join message
+            on msg_card_id = msg_id 
+            WHERE pin_id = '$pin_id' ");
+  if($pin) {
+        //found pin, return success result
+
+        $response['pin'] = $pin;
+        $response['status'] = "success";
+        $response["message"] = "Pin Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pin Details!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getAllPins', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+
+$pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode ");    
+$unused_pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used IS NULL ");
+$used_pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used = '1' ");
+
+  if($unused_pin || $used_pin) {
+        $response['unused_pin'] = $unused_pin;
+        $response['used_pin'] = $used_pin;
+        $response['pin'] = $pin;
+        $response['status'] = "success";
+        $response["message"] = "Latest Pins Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pins!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getLatestGenPins', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $pin_total = $db->purify($app->request->get('id'));
+    
+$latestPins = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used IS NULL
+            ORDER BY pin_date_generated DESC
+            LIMIT $pin_total");
+  if($latestPins) {
+        //found pin, return success result
+
+        $response['pins'] = $latestPins;
+        $response['status'] = "success";
+        $response["message"] = "Pin Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pin Details!";
+        echoResponse(201, $response);
+    }
+});
+
+// create card
+$app->post('/generateNewPin', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['pin_total', 'pin_value'],$r->pin);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $pin_value = $db->purify($r->pin->pin_value);
+    $pin_total = $db->purify($r->pin->pin_total);
+    $pin_date_generated = date("Y-m-d");
+    //check if pincode table exist
+    $isPincodeTableExists = $db->getOneRecord("SELECT 1 FROM pincode");
+
+    if ($isPincodeTableExists) {
+                $pins = $db->getRecordset("SELECT pin_code FROM pincode");
+                    for ($i=0; $i < $pin_total ; $i++) { 
+                        $newPin = $db->randomPin();
+                        //extra check to ensure we dont have the same pin genrated in different row in the database
+                        $pin_code = $db->checkPin($newPin, $pins);
+                        $table_name = "pincode";
+                        $column_names = ['pin_code', 'pin_date_generated', 'pin_value'];
+                        $values = [$pin_code, $pin_date_generated, $pin_value];
+                        $result = $db->insertToTable($values, $column_names, $table_name);
+                   }
+                    if ($result != NULL) {
+                        $response["pins"] = "$latestPins";
+                        $response["status"] = "success";
+                        $response["message"] = "Pin generated successfully";
+                        echoResponse(200, $response);                                            
+                                    
+                    } else {
+                        $response["status"] = "error";
+                        $response["message"] = "Failed to generate pin. Please try again";
+                        echoResponse(201, $response);
+                    }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "Error, please try again!";
+        echoResponse(201, $response);
+    }
+});

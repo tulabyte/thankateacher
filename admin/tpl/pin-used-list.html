@@ -1,0 +1,48 @@
+<div class="bg-light lter b-b wrapper-md">
+  <div class="pull-left">
+    <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+  </div>
+  <div class="pull-right">
+        <button class="btn m-b-xs btn-success btn-addon" ui-sref="app.pin-gen"><i class="fa fa-plus"></i>Generate Pin</button>
+    </div>
+  <div class="clearfix"></div>
+</div>
+<div class="wrapper-md" ng-controller="PinController">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      List of Pins
+    </div>
+    <div class="table-responsive">
+      <table datatable="ng" class="table table-striped m-b-none">
+        <thead>
+          <tr>
+            <th width="25%">Pincode</th>
+            <th width="10%">Value</th>
+            <th width="25%">Date Generated</th>
+            <th width="10%">Status</th>
+            <th width="10%">Date Used</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="pin in pins">
+            <td><a class="thumbnail"><img src="./img/pin-images/{{pin.pin_image}}"></td></a>
+            <td> {{pin.pin_code}} </td>
+            <td> {{pin.pin_value}} </td>
+            <td> {{pin.pin_date_generated}} </td>
+            <td> <button style="width: 50%" class="btn btn-icon btn-sm btn-primary" >{{pin.pin_is_used ? 'USED' : 'UNUSED'}}</button></td>
+            <td> {{pin.pin_date_used}} </td>
+            <td>
+              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.pin-details({id:pin.pin_id})" tooltip="Pin Details"><i class="fa fa-info"></i> {{pin.pin_date_used}}</button>
+
+              <button class="btn btn-icon btn-sm btn-danger" ng-if="!pin.pin_is_disabled" ng-click="togglePin(pin.pin_id, 'disable')" tooltip="Disable Pin"><i class="fa fa-ban"></i></button>
+
+              <button class="btn btn-icon btn-sm btn-warning" ng-if="pin.pin_is_disabled" ng-click="togglePin(pin.pin_id, 'enable')" tooltip="Enable Pin"><i class="fa fa-thumbs-up"></i></button> 
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

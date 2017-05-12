@@ -156,7 +156,7 @@ angular.module('app')
                   }
               })
 
-              // create-card
+              // edit-card
               .state('app.edit-card', {
                   url: '/create-card/:id',
                   templateUrl: 'tpl/create-card.html',
@@ -191,6 +191,67 @@ angular.module('app')
                       deps: ['uiLoad',
                         function( uiLoad){
                           return uiLoad.load('js/controllers/CardController.js');
+                      }]
+                  }
+              })
+
+              .state('app.latest-pin-gen', {
+                  url: '/latest-pin/:id',
+                  templateUrl: 'tpl/latest-pin-gen.html',
+                  data: {pageTitle: 'Latest Generated Pins'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/PinController.js');
+                      }]
+                  }
+              })
+
+              .state('app.pin-used-list', {
+                  url: '/used-pins',
+                  templateUrl: 'tpl/pin-used-list.html',
+                  data: {pageTitle: 'Used Pins'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/PinController.js');
+                      }]
+                  }
+              })
+
+              .state('app.pin-unused-list', {
+                  url: '/unused-pins',
+                  templateUrl: 'tpl/pin-unused-list.html',
+                  data: {pageTitle: 'Unused Pins'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/PinController.js');
+                      }]
+                  }
+              })
+
+              .state('app.pin-gen', {
+                  url: '/gen-pin',
+                  templateUrl: 'tpl/pin-gen.html',
+                  data: {pageTitle: 'Generate Pin'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/PinController.js');
+                      }]
+                  }
+              })
+
+            // pin-details
+              .state('app.pin-details', {
+                  url: '/pin-details/:id',
+                  templateUrl: 'tpl/pin-details.html',
+                  data: {pageTitle: 'Pin Details'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/PinController.js');
                       }]
                   }
               })
