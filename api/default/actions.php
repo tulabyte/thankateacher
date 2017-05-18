@@ -76,14 +76,38 @@ $app->get('/getMessageDetails', function() use ($app) {
     
     if($message) {
 
-        $response["message"] = "Messages loaded successfully!";
+        $response["message"] = "Message found!";
         $response['messages'] = $message;
         $response['status'] = "success";
        
         echoResponse(200, $response);
     } else {
         $response['status'] = "error";
-        $response["message"] = "error!!!";
+        $response["message"] = "ERROR: Message not found!";
+        echoResponse(201, $response);
+    }
+
+});
+
+//get single message (with card)
+$app->get('/getMessageWithCard', function() use ($app) {
+
+    $response = array();
+    $db = new DbHandler();
+    $msg_id = $db->purify($app->request->get('id'));
+
+    $message = $db->getOneRecord("SELECT * FROM message LEFT JOIN card_design ON msg_card_id = card_id WHERE msg_id = '$msg_id'");
+    
+    if($message) {
+
+        $response["message"] = "Message found!";
+        $response['msg'] = $message;
+        $response['status'] = "success";
+       
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "ERROR: Message not found!";
         echoResponse(201, $response);
     }
 
@@ -575,20 +599,41 @@ $app->get('/approveMessage', function() use ($app) {
         $log_details = "Approved Message: (ID: $msg_id)";
         $db->logAction($log_details);
 
-        // notify teacher if valid email was provided
-        if (!filter_var($message['msg_teacher_email'], FILTER_VALIDATE_EMAIL) === false) {
-            $swiftmailer = new mySwiftMailer();
-            $subject = $message['msg_sender_name']." is saying THANK YOU!";
-            $msg_link = "http://thankateacher.nigerianteachingawards.org/index.html#/view-message/".$msg_id;
-            $body = "<p>Hello ".$message['msg_teacher_name'].",</p>
-    <p>".$message['msg_sender_name']." has submitted a new THANK YOU message for YOU on the Thank A Teacher platform.</p>
-    <p>
-    To see your message, please click on the following link:<br>
-    <a href='$msg_link'>$msg_link</a>
-    </p>
-    <p>NOTE: please DO NOT REPLY to this email.</p>
-    <p><br><strong>Thank A Teacher</strong></p>";
-            $swiftmailer->sendmail('info@nigerianteachingawards.org', 'Nigerian Teaching Awards', [$message['msg_teacher_email']], $subject, $body);            
+        $swiftmailer = new mySwiftMailer(); //prepare mailer
+
+        // sending a card?
+        if($message['msg_card_id']) {
+            
+            $cardmaker = new cardMaker();
+
+            // send a card
+            if (!filter_var($message['msg_teacher_email'], FILTER_VALIDATE_EMAIL) === false) {
+                // valid teacher email
+                $card = $db->getOneRecord("SELECT * FROM card_design WHERE card_id = '".$message['msg_card_id']."' ");
+                $subject = $message['msg_sender_name']." is saying THANK YOU with a beautiful card!";
+                $card_link = "http://thankateacher.nigerianteachingawards.org/my-card.html#/view/".$msg_id;
+                $body = $cardmaker->makeCard($message, $card);
+                $swiftmailer->sendmail('info@nigerianteachingawards.org', 'Nigerian Teaching Awards', [$message['msg_teacher_email']], $subject, $body);
+            } else {
+                $email_invalid = "The email you supplied (".$message['msg_teacher_email'].") is INVALID, therefore we couldn't deliver your card.";
+            }
+        } else {
+            // just send the message
+            // notify teacher if valid email was provided
+            if (!filter_var($message['msg_teacher_email'], FILTER_VALIDATE_EMAIL) === false) {
+                
+                $subject = $message['msg_sender_name']." is saying THANK YOU!";
+                $msg_link = "http://thankateacher.nigerianteachingawards.org/index.html#/view-message/".$msg_id;
+                $body = "<p>Hello ".$message['msg_teacher_name'].",</p>
+        <p>".$message['msg_sender_name']." has submitted a new THANK YOU message for YOU on the Thank A Teacher platform.</p>
+        <p>
+        To see your message, please click on the following link:<br>
+        <a href='$msg_link'>$msg_link</a>
+        </p>
+        <p>NOTE: please DO NOT REPLY to this email.</p>
+        <p><br><strong>Thank A Teacher</strong></p>";
+                $swiftmailer->sendmail('info@nigerianteachingawards.org', 'Nigerian Teaching Awards', [$message['msg_teacher_email']], $subject, $body);            
+            }
         }
 
         // notify sender if valid email was provided
@@ -873,10 +918,12 @@ $app->post('/createMessage', function() use ($app) {
     $class = $r->message->class? $db->purify($r->message->class) : NULL;
     $message = $db->purify($r->message->message);
     $card_id = isset($r->message->msg_card_id)? $db->purify($r->message->msg_card_id) : NULL;
+    $pin = isset($r->message->pin)? $db->purify($r->message->pin) : NULL;
     $time_submitted = date("Y-m-d h:i:s");
     $status = 'PENDING';
 
-    //$r->admin->password = passwordHash::hash($password);
+    $card = $db->getOneRecord("SELECT * FROM card_design WHERE card_id='$card_id' ");
+
     $table_name = "message";
     $column_names = ['msg_teacher_name','msg_teacher_email','msg_teacher_phone','msg_sender_name','msg_sender_email', 'msg_sender_phone', 'msg_school', 'msg_state', 'msg_city', 'msg_class', 'msg_message', 'msg_time_submitted', 'msg_status', 'msg_card_id'];
     $values = [$teacher_name,$teacher_email,$teacher_phone,$sender_name,$sender_email, $sender_phone, $school, $state, $city, $class, $message, $time_submitted, $status, $card_id];
@@ -888,6 +935,14 @@ $app->post('/createMessage', function() use ($app) {
         $response["message"] = "Message created successfully";
         $response["msg_id"] = $result;
 
+        if($pin) {
+            // record pin usage
+            $table_to_update = "pincode";
+            $columns_to_update = ['pin_is_used'=>'1', 'pin_msg_id'=>$result, 'pin_date_used'=>$time_submitted];
+            $where_clause = ['pin_code'=>$pin];
+            $result2 = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);    
+        }
+        
         // Get admin email addresses for notification
         $admin_emails = $db->getRecordset("SELECT admin_email FROM admin WHERE admin_is_disabled IS NULL");
         // build $to array
@@ -896,7 +951,7 @@ $app->post('/createMessage', function() use ($app) {
             $to[] = $email['admin_email'];
         }
 
-        $cardline = ($card_id) ? "<p>NOTE: This message will be sent in a card</p>" : NULL;
+        $cardline = ($card_id) ? "<p>NOTE: This message will be sent in the card <strong>(".$card['card_title'].")</strong> using PIN <strong>($pin)</strong></p>" : NULL;
 
         //send email notification to admin
         $swiftmailer = new mySwiftMailer();
@@ -1033,6 +1088,28 @@ $app->get('/getActiveCardDesigns', function() use ($app) {
         echoResponse(201, $response);
     }
 
+});
+
+// check Pin
+$app->get('/checkPin', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $pin = $db->purify($app->request->get('pin'));
+    
+    $pincode = $db->getOneRecord("SELECT * FROM pincode WHERE pin_code = '$pin' AND pin_msg_id IS NULL AND pin_is_used IS NULL AND pin_is_disabled IS NULL");
+
+    if($pincode) {
+        //found pin, return success result
+        $response['pincode'] = $pincode;
+        $response['status'] = "success";
+        $response["message"] = "Pin is Valid, Active and Unused!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "ERROR: Pin is INVALID, DISABLED or Already USED";
+        echoResponse(201, $response);
+    }
 });
 
 // create card

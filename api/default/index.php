@@ -20,6 +20,7 @@ require_once 'dbHandler.php';
 require_once 'passwordHash.php';
 require '.././libs/Slim/Slim.php';
 require_once 'mySwiftMailer.php';
+require_once 'cardMaker.php';
 require_once 'functions.php';
 // require_once '.././libs/Slim/Middleware/CorsSlim.php';
 

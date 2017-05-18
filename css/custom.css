@@ -36,6 +36,13 @@ input[type="button"]:hover {
   color: #fff;
 }
 
+input.textbox-regular {
+    padding: 10px;
+    height: 2.5em;
+    margin-bottom: 20px;
+    background-color: white;
+}
+
 select {
   height: 54px;
   width: 100%;
@@ -106,4 +113,22 @@ textarea {
   height: 600px;
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+.btn-tiny {
+    padding: 0 10px;
+    border-radius: 0px;
+    margin: 0px;
+    height: 2.5em;
+    font-size: 16px;
+}
+
+/*to enable cursor on anchors with just ng-click and no href*/
+a[ng-click]{
+    cursor: pointer;
+}
+
+.card-width {
+  width: 816px;
+  margin: auto;
 }

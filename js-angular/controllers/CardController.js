@@ -45,10 +45,58 @@ app
       // $scope.bgshow = "inherit";
 
       $scope.loading = true;
+      $scope.card_pin_error = false;
 
-      $scope.storeCardChoice = function(card) {
+      // put the selected card in cookie
+      $scope.storeSelectedCard = function(card) {
+        $cookieStore.remove('card');
         $cookieStore.put('card', card);
-        console.log('card choice stored!');
+        $scope.card_pin_error = false;
+        delete $scope.message.pin;
+      }
+
+      // store message in cookie
+      /*$scope.storeMessage = function(message) {
+        $cookieStore.put('message', message);
+      }*/
+
+      // format the card title and value for display
+      $scope.getCardDisplay = function(card) {
+        // console.log('getCardDisplay:',card);
+        var price = (card.card_value > 0.00) ? ('₦' + card.card_value) : 'FREE';
+        return card.card_title + ' (' + price + ')';
+      }
+
+      // check the pin
+      $scope.checkPin = function(card_pin) {
+        if(!card_pin || card_pin.length < 12) {
+          $scope.card_pin_error = true;
+        } else {
+          Data.get("checkPin?pin="+card_pin).then(function(results) {
+            console.log('checkPin results',results);
+            if(results !== undefined && results !== null && results.status == "success") {
+              // is the pin of correct value?
+              if(parseFloat(results.pincode.pin_value) == parseFloat($scope.selected_card.card_value)) {
+                $scope.card_pin_error = false;
+                $scope.message.pin = card_pin; 
+              } else {
+                alert("The value of the pin you  supplied ("+results.pincode.pin_value+") is incorrect!");
+              }
+              
+            } else {
+              if(results !== undefined && results !== null) alert(results.message);
+              $scope.card_pin_error = true;
+            }
+          });
+        }
+      }
+
+      // remove the pin
+      $scope.removePin = function() {
+        if(confirm("Are you sure you want to remove this pin?")) {
+          delete $scope.card_pin;
+          delete $scope.message.pin;
+        }
       }
 
       // check if message is in cookie
@@ -66,12 +114,13 @@ app
         // get card designs
         Data.get("getActiveCardDesigns").then(function(results) {
           if(results.status == "success") {
+            console.log('get cards results:',results);
             $scope.cards = results.cards; //put result in cards
             if(!$cookieStore.get('card')) {
               $scope.selected_card = $scope.cards[0]; //select first card as default  
             } else {
               $scope.selected_card = $cookieStore.get('card'); //pick the stored choice from cookie
-            }            
+            }
             $scope.loading = false;
           }
         })
