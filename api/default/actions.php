@@ -1217,3 +1217,263 @@ $messages = $db->getRecordset("SELECT msg_sender_name, msg_sender_phone, msg_mes
         echoResponse(201, $response);
     }
 });
+
+//getPinDetails
+$app->get('/getPinDetails', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $pin_id = $db->purify($app->request->get('id'));
+    
+$pin = $db->getOneRecord("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled, msg_message, msg_teacher_name, msg_teacher_phone, msg_sender_name, msg_sender_phone
+            FROM pincode 
+            left join message
+            on msg_card_id = msg_id 
+            WHERE pin_id = '$pin_id' ");
+  if($pin) {
+        //found pin, return success result
+
+        $response['pin'] = $pin;
+        $response['status'] = "success";
+        $response["message"] = "Pin Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pin Details!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getAllPins', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+
+$pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode ");    
+$unused_pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used IS NULL ");
+$used_pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used = '1' ");
+
+  if($unused_pin || $used_pin) {
+        $response['unused_pin'] = $unused_pin;
+        $response['used_pin'] = $used_pin;
+        $response['pin'] = $pin;
+        $response['status'] = "success";
+        $response["message"] = "Latest Pins Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pins!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getLatestGenPins', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $pin_total = $db->purify($app->request->get('id'));
+    
+$latestPins = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used IS NULL
+            ORDER BY pin_id DESC
+            LIMIT $pin_total");
+  if($latestPins) {
+        //found pin, return success result
+
+        $response['pins'] = $latestPins;
+        $response['status'] = "success";
+        $response["message"] = "Pin Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pin Details!";
+        echoResponse(201, $response);
+    }
+});
+
+// create card
+$app->post('/generateNewPin', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['pin_total', 'pin_value'],$r->pin);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $pin_value = $db->purify($r->pin->pin_value);
+    $pin_total = $db->purify($r->pin->pin_total);
+    $pin_date_generated = date("Y-m-d");
+    $latest_pins = array();
+    //check if pincode table exist
+    $isPincodeTableExists = $db->getOneRecord("SELECT 1 FROM pincode");
+
+    if ($isPincodeTableExists) {
+                $pins = $db->getRecordset("SELECT pin_code FROM pincode");
+                    for ($i=0; $i < $pin_total ; $i++) { 
+                        $newPin = $db->randomPin();
+                        //extra check to ensure we dont have the same pin genrated in different row in the database
+                        $pin_code = $db->checkPin($newPin, $pins);
+                        $latest_pins[$i] = $pin_code;
+                        $table_name = "pincode";
+                        $column_names = ['pin_code', 'pin_date_generated', 'pin_value'];
+                        $values = [$pin_code, $pin_date_generated, $pin_value];
+                        $result = $db->insertToTable($values, $column_names, $table_name);
+                   }
+                    if ($result != NULL) {
+                        $response["latest_pins"] = $latest_pins;
+                        $response["status"] = "success";
+                        $response["message"] = "Pin generated successfully";
+                        echoResponse(200, $response);                                            
+                                    
+                    } else {
+                        $response["status"] = "error";
+                        $response["message"] = "Failed to generate pin. Please try again";
+                        echoResponse(201, $response);
+                    }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "Error, please try again!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getAllVideos', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+
+$videos = $db->getRecordset("SELECT vid_id, vid_date, vid_embed_url,vid_student, vid_teacher, vid_school, vid_city
+            FROM video ");    
+
+  if($videos) {
+        $response['videos'] = $videos;
+        $response['status'] = "success";
+        $response["message"] = "Latest Videos Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Videos!";
+        echoResponse(201, $response);
+    }
+});
+
+
+$app->post('/editVideo', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['vid_id', 'vid_embed_url','vid_student', 'vid_teacher', 'vid_school', 'vid_city'],$r->video);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $vid_embed_url = $db->purify($r->video->vid_embed_url);
+    $vid_student = $db->purify($r->video->vid_student);
+    $vid_teacher = $db->purify($r->video->vid_teacher);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_city = $db->purify($r->video->vid_city);
+    $vid_id = $db->purify($r->video->vid_id);
+    //check if card already exists with same title
+
+    $isVideoExists = $db->getOneRecord("SELECT 1 FROM video WHERE vid_id='$vid_id'");
+    if($isVideoExists){
+    $table_to_update = "video";
+    $columns_to_update = ['vid_embed_url'=>$vid_embed_url, 'vid_student'=>$vid_student, ' vid_teacher'=>$vid_teacher, 'vid_school'=>$vid_school, 'vid_city'=>$vid_city];
+    $where_clause = ['vid_id'=>$vid_id];
+    $result = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);
+        
+        if ($result) {
+            $response["status"] = "success";
+            $response["message"] = "video updated successfully";
+            echoResponse(200, $response);
+        } else {
+            $response["status"] = "error";
+            $response["message"] = "Failed to update card. Please try again";
+            echoResponse(201, $response);
+        }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "card does not exists!";
+        echoResponse(201, $response);
+    }
+});
+
+//creating new video
+$app->post('/createNewVideo', function() use ($app) {
+    
+    $response = array();
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['vid_embed_url','vid_student', 'vid_teacher', 'vid_school', 'vid_city'],$r->video);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $vid_embed_url = $db->purify($r->video->vid_embed_url);
+    $vid_student = $db->purify($r->video->vid_student);
+    $vid_teacher = $db->purify($r->video->vid_teacher);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_city = $db->purify($r->video->vid_city);
+    $vid_date = date("Y-m-d h:i:s");
+    $video_count = $db->getOneRecord("SELECT count(*) as vid_count FROM video");
+    //dummy test
+    $isVideoTableExists = $db->getOneRecord("SELECT 1 FROM video");
+    if ($isVideoTableExists || !$isVideoTableExists) {
+    $video_count = $db->getOneRecord("SELECT count(*) as vid_count FROM video");
+                       if ($video_count[vid_count] >= 3) {
+                        $response["status"] = "error";
+                        $response["message"] = "Video directory full. Try updating an existing video";
+                        echoResponse(201, $response);       
+                     }else{
+                        $table_name = "video";
+                        $column_names = ['vid_date','vid_embed_url','vid_student', 'vid_teacher', 'vid_school', 'vid_city'];
+                        $values = [$vid_date, $vid_embed_url, $vid_student, $vid_teacher, $vid_school, $vid_city];
+                        $result = $db->insertToTable($values, $column_names, $table_name);  
+                            if ($result != NULL) {
+                                $response["status"] = "success";
+                                $response["message"] = "Video Created Successfully";
+                                echoResponse(200, $response);                                            
+                                            
+                            }else{
+                                $response["status"] = "error";
+                                $response["message"] = "Failed to create video. Please try again";
+                                echoResponse(201, $response);
+                            }
+                             
+                     }
+  
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "Error, please try again!";
+        echoResponse(201, $response);
+    }
+});
+
+
+
+$app->get('/getVideoDetails', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $vid_id = $db->purify($app->request->get('id'));
+    
+$video = $db->getOneRecord("SELECT *
+            FROM video 
+            WHERE vid_id = '$vid_id' ");
+  if($video) {
+        //found video, return success result
+
+        $response['video'] = $video;
+        $response['status'] = "success";
+        $response["message"] = "Video Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Video Details!";
+        echoResponse(201, $response);
+    }
+});
