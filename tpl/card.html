@@ -25,14 +25,40 @@
 						<div class="col-sm-3">
 							
 							<div class="panel panel-default">
-							     <div class="panel-heading">Select Card Design</div>
+							     <div class="panel-heading">Click to Select Card Design</div>
 								  <div class="panel-body">
-								    <select class="form-control" ng-model="selected_card" ng-options="card.card_title for card in cards track by card.card_id" ng-change="storeCardChoice(selected_card)">		
+								  	<!-- <option ng-repeat="card in cards track by card.card_id" ng-value="card">{{card.card_title}} ({{ card.card_value > 0.00 ? ('&#8358;' + card.card_value | number:2) : 'FREE'}})</option> -->
+								    <select class="form-control" ng-model="selected_card" ng-change="storeSelectedCard(selected_card)" ng-options="getCardDisplay(card) for card in cards track by card.card_id">				
 								    </select>
 								    <div class="alert alert-default" ng-show = "selected_card">
 								    	{{selected_card.card_description}}
 								    </div>
-								    <button class="btn-success btn-lg btn-block" ng-click="submitMessage(message, selected_card)" ng-disabled="submit_clicked" >Send Card Now</button>
+
+								    <div ng-if="selected_card.card_value > 0.00">
+									    
+									    <div class="alert alert-danger" ng-show="!message.pin">
+									    	<strong>This card costs ₦{{selected_card.card_value | number:2}}</strong>. You need a ₦{{selected_card.card_value}} PIN to send this card. Please enter your 12-character PIN below.
+									    </div>
+
+									    <div class="row" ng-show="!message.pin">
+									    	<div class="col-sm-12">
+												<div class="input-group" ng-class="{'has-error':card_pin_error}">
+												    <input class="form-control textbox-regular" ng-model="card_pin" maxlength="12" minlength="12" type="text" placeholder="enter PIN here" >
+												    <span class="input-group-addon">
+												        <a ng-click="checkPin(card_pin)"><i class="fa fa-check" aria-hidden="true"></i></a>
+												    </span>
+												</div>	
+												<p class="help-block text-right"><a href="http://nigerianteachingawards.org" target="_blank" class="text-muted">How can I get a PIN?</a></p>
+												<br>							    	
+									    	</div>
+									    </div>
+
+									    <div class="alert alert-warning" ng-show="message.pin">
+									    	You are using the ₦{{selected_card.card_value}} PIN <strong>{{message.pin}}</strong> for this purchase. <a ng-click="removePin(message)">x Remove this Pin</a>
+									    </div>
+								    </div>
+
+								    <button class="btn-success btn-lg btn-block" ng-click="submitMessage(message, selected_card)" ng-hide="selected_card.card_value > 0.00 && !message.pin" ng-disabled="submit_clicked || !selected_card || (selected_card && selected_card.card_value > 0.00 && !message.pin)" >Send Card Now</button>
 								  </div>
 						  	</div>
 					

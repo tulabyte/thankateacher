@@ -1,0 +1,44 @@
+			<section ng-show="loading">
+				<div class="container">
+					
+					<div class="row card-width">
+						<div class="col-sm-12 text-center text-success">
+							Loading your card...
+						</div>
+					</div>
+				</div>
+
+			</section>
+
+			<section class="faq faq-1" ng-show="!loading">
+				<div class="container">
+					
+
+					<div class="row card-width" ng-show="message_error">
+						<div class="col-sm-12">
+							<div class="alert alert-danger" role="alert" >
+							  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							  {{message_error}}								  
+							</div>
+						</div>
+					</div>
+
+
+					<div class="row card-width" ng-show="message && !message_error">
+						<div class="card-view" ng-class="{'black': message.card_themeColor == 'black', 'white': message.card_themeColor == 'white'}" style="background-image: url({{cards_url + message.card_image}}) !important;">
+					    	<p><strong>Dear {{message.msg_teacher_name}}</strong>,</p>
+					    	<p>{{message.msg_message}}</p>
+					    	<p>Sincerely,</p>
+					    	<p>
+					    		<strong>{{message.msg_sender_name}}</strong><br>
+					    		{{message.msg_class}}, {{message.msg_school}}<br>
+					    		{{message.msg_city}}, {{message.msg_state}} 
+					    	</p>
+
+					    </div>
+					
+					</div>
+				
+				</div>
+			</section>
+			

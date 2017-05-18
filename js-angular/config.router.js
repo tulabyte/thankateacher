@@ -43,6 +43,14 @@ angular.module('app')
                   controller: 'CardController'
               })
 
+              .state('view', {
+                  url: '/view/:id',
+                  data: {pageTitle: 'My Card'},
+                  templateUrl: 'tpl/view.html',
+                  cache: false,
+                  controller: 'CardViewController'
+              })
+
               .state('archive', {
                   url: '/archive',
                   data: {pageTitle: 'Message Archive'},

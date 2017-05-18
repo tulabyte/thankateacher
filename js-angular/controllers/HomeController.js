@@ -141,6 +141,8 @@ app
         if(confirm("Would you like to Send a Card to your Teacher?")) {
           if(message.teacher_email !== null && message.teacher_email !== undefined) {
             // store the message in cookies
+            delete message.pin;
+            $cookieStore.remove('message');
             $cookieStore.put('message', message);
             // move to the card selection view
             console.log('Going to Card page...');
