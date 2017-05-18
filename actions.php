@@ -76,38 +76,14 @@ $app->get('/getMessageDetails', function() use ($app) {
     
     if($message) {
 
-        $response["message"] = "Message found!";
+        $response["message"] = "Messages loaded successfully!";
         $response['messages'] = $message;
         $response['status'] = "success";
        
         echoResponse(200, $response);
     } else {
         $response['status'] = "error";
-        $response["message"] = "ERROR: Message not found!";
-        echoResponse(201, $response);
-    }
-
-});
-
-//get single message (with card)
-$app->get('/getMessageWithCard', function() use ($app) {
-
-    $response = array();
-    $db = new DbHandler();
-    $msg_id = $db->purify($app->request->get('id'));
-
-    $message = $db->getOneRecord("SELECT * FROM message LEFT JOIN card_design ON msg_card_id = card_id WHERE msg_id = '$msg_id'");
-    
-    if($message) {
-
-        $response["message"] = "Message found!";
-        $response['msg'] = $message;
-        $response['status'] = "success";
-       
-        echoResponse(200, $response);
-    } else {
-        $response['status'] = "error";
-        $response["message"] = "ERROR: Message not found!";
+        $response["message"] = "error!!!";
         echoResponse(201, $response);
     }
 
@@ -599,41 +575,20 @@ $app->get('/approveMessage', function() use ($app) {
         $log_details = "Approved Message: (ID: $msg_id)";
         $db->logAction($log_details);
 
-        $swiftmailer = new mySwiftMailer(); //prepare mailer
-
-        // sending a card?
-        if($message['msg_card_id']) {
-            
-            $cardmaker = new cardMaker();
-
-            // send a card
-            if (!filter_var($message['msg_teacher_email'], FILTER_VALIDATE_EMAIL) === false) {
-                // valid teacher email
-                $card = $db->getOneRecord("SELECT * FROM card_design WHERE card_id = '".$message['msg_card_id']."' ");
-                $subject = $message['msg_sender_name']." is saying THANK YOU with a beautiful card!";
-                $card_link = "http://thankateacher.nigerianteachingawards.org/my-card.html#/view/".$msg_id;
-                $body = $cardmaker->makeCard($message, $card);
-                $swiftmailer->sendmail('info@nigerianteachingawards.org', 'Nigerian Teaching Awards', [$message['msg_teacher_email']], $subject, $body);
-            } else {
-                $email_invalid = "The email you supplied (".$message['msg_teacher_email'].") is INVALID, therefore we couldn't deliver your card.";
-            }
-        } else {
-            // just send the message
-            // notify teacher if valid email was provided
-            if (!filter_var($message['msg_teacher_email'], FILTER_VALIDATE_EMAIL) === false) {
-                
-                $subject = $message['msg_sender_name']." is saying THANK YOU!";
-                $msg_link = "http://thankateacher.nigerianteachingawards.org/index.html#/view-message/".$msg_id;
-                $body = "<p>Hello ".$message['msg_teacher_name'].",</p>
-        <p>".$message['msg_sender_name']." has submitted a new THANK YOU message for YOU on the Thank A Teacher platform.</p>
-        <p>
-        To see your message, please click on the following link:<br>
-        <a href='$msg_link'>$msg_link</a>
-        </p>
-        <p>NOTE: please DO NOT REPLY to this email.</p>
-        <p><br><strong>Thank A Teacher</strong></p>";
-                $swiftmailer->sendmail('info@nigerianteachingawards.org', 'Nigerian Teaching Awards', [$message['msg_teacher_email']], $subject, $body);            
-            }
+        // notify teacher if valid email was provided
+        if (!filter_var($message['msg_teacher_email'], FILTER_VALIDATE_EMAIL) === false) {
+            $swiftmailer = new mySwiftMailer();
+            $subject = $message['msg_sender_name']." is saying THANK YOU!";
+            $msg_link = "http://thankateacher.nigerianteachingawards.org/index.html#/view-message/".$msg_id;
+            $body = "<p>Hello ".$message['msg_teacher_name'].",</p>
+    <p>".$message['msg_sender_name']." has submitted a new THANK YOU message for YOU on the Thank A Teacher platform.</p>
+    <p>
+    To see your message, please click on the following link:<br>
+    <a href='$msg_link'>$msg_link</a>
+    </p>
+    <p>NOTE: please DO NOT REPLY to this email.</p>
+    <p><br><strong>Thank A Teacher</strong></p>";
+            $swiftmailer->sendmail('info@nigerianteachingawards.org', 'Nigerian Teaching Awards', [$message['msg_teacher_email']], $subject, $body);            
         }
 
         // notify sender if valid email was provided
@@ -677,6 +632,14 @@ $app->get('/toggleItem', function() use ($app) {
         case 'message':
             $prefix = 'msg';
             break;
+
+        case 'card_design':
+            $prefix = 'card';
+            break;
+
+        case 'pincode':
+            $prefix = 'pin';
+            break;            
     }
 
     $table_to_update = $item_type;
@@ -918,15 +881,13 @@ $app->post('/createMessage', function() use ($app) {
     $class = $r->message->class? $db->purify($r->message->class) : NULL;
     $message = $db->purify($r->message->message);
     $card_id = isset($r->message->msg_card_id)? $db->purify($r->message->msg_card_id) : NULL;
-    $pin = isset($r->message->pin)? $db->purify($r->message->pin) : NULL;
     $time_submitted = date("Y-m-d h:i:s");
     $status = 'PENDING';
-
-    $card = $db->getOneRecord("SELECT * FROM card_design WHERE card_id='$card_id' ");
-
+    //$r->admin->password = passwordHash::hash($password);
     $table_name = "message";
     $column_names = ['msg_teacher_name','msg_teacher_email','msg_teacher_phone','msg_sender_name','msg_sender_email', 'msg_sender_phone', 'msg_school', 'msg_state', 'msg_city', 'msg_class', 'msg_message', 'msg_time_submitted', 'msg_status', 'msg_card_id'];
     $values = [$teacher_name,$teacher_email,$teacher_phone,$sender_name,$sender_email, $sender_phone, $school, $state, $city, $class, $message, $time_submitted, $status, $card_id];
+    
 
     $result = $db->insertToTable($values, $column_names, $table_name);
 
@@ -935,14 +896,6 @@ $app->post('/createMessage', function() use ($app) {
         $response["message"] = "Message created successfully";
         $response["msg_id"] = $result;
 
-        if($pin) {
-            // record pin usage
-            $table_to_update = "pincode";
-            $columns_to_update = ['pin_is_used'=>'1', 'pin_msg_id'=>$result, 'pin_date_used'=>$time_submitted];
-            $where_clause = ['pin_code'=>$pin];
-            $result2 = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);    
-        }
-        
         // Get admin email addresses for notification
         $admin_emails = $db->getRecordset("SELECT admin_email FROM admin WHERE admin_is_disabled IS NULL");
         // build $to array
@@ -951,7 +904,7 @@ $app->post('/createMessage', function() use ($app) {
             $to[] = $email['admin_email'];
         }
 
-        $cardline = ($card_id) ? "<p>NOTE: This message will be sent in the card <strong>(".$card['card_title'].")</strong> using PIN <strong>($pin)</strong></p>" : NULL;
+        $cardline = ($card_id) ? "<p>NOTE: This message will be sent in a card</p>" : NULL;
 
         //send email notification to admin
         $swiftmailer = new mySwiftMailer();
@@ -1090,28 +1043,6 @@ $app->get('/getActiveCardDesigns', function() use ($app) {
 
 });
 
-// check Pin
-$app->get('/checkPin', function() use ($app) {
-    $response = array();
-
-    $db = new DbHandler();
-    $pin = $db->purify($app->request->get('pin'));
-    
-    $pincode = $db->getOneRecord("SELECT * FROM pincode WHERE pin_code = '$pin' AND pin_msg_id IS NULL AND pin_is_used IS NULL AND pin_is_disabled IS NULL");
-
-    if($pincode) {
-        //found pin, return success result
-        $response['pincode'] = $pincode;
-        $response['status'] = "success";
-        $response["message"] = "Pin is Valid, Active and Unused!";
-        echoResponse(200, $response);
-    } else {
-        $response['status'] = "error";
-        $response["message"] = "ERROR: Pin is INVALID, DISABLED or Already USED";
-        echoResponse(201, $response);
-    }
-});
-
 // create card
 $app->post('/createNewCard', function() use ($app) {
     
@@ -1125,28 +1056,34 @@ $app->post('/createNewCard', function() use ($app) {
     $card_description = $db->purify($r->card->card_description);
     $card_value = $db->purify($r->card->card_value);
     $card_themeColor = $db->purify($r->card->card_themeColor);
-    $card_image = ($r->card->card_image);
+    $card_image = $db->purify($r->card->card_image);
+
     //check if card already exists with same title
     $iscardExists = $db->getOneRecord("SELECT 1 FROM card_design WHERE card_title='$card_title'");
     if(!$iscardExists){
         //the title has not yet been used
         //$r->card->password = passwordHash::hash($password);
         $table_name = "card_design";
-        $column_names = ['card_title', 'card_description', 'card_value', 'card_themeColor', 'card_image'];
-        $values = [$card_title, $card_description, $card_value, $card_themeColor,$card_image,];
+        $column_names = ['card_title', 'card_description', 'card_value', 'card_themeColor'];
+        $values = [$card_title, $card_description, $card_value, $card_themeColor];
 
         $result = $db->insertToTable($values, $column_names, $table_name);
 
         if ($result != NULL) {
-            $response["status"] = "success";
-            $response["message"] = "card created successfully";
-            $response["card_id"] = $result;
-
-            //log action
-/*            $log_details = "Created New card: $card_title (ID: $result)";
-            $db->logAction($log_details);            
-*/
-            echoResponse(200, $response);
+            $card_image_name = explode('.', $card_image);
+            $card_image_temp_name = $card_image_name[0];
+            $card_image_temp_ext = $card_image_name[1];
+            $card_image_fullname = $result.'.'.$card_image_temp_ext;
+            $table_to_update = "card_design";
+            $columns_to_update = ['card_image'=>$card_image_fullname];
+            $where_clause = ['card_id'=>$result];
+            $update_result = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);
+                if ($update_result != NULL) {
+                        $response["status"] = "success";
+                        $response["message"] = "card created successfully";
+                        $response["card_name"] = $card_image_fullname;
+                        echoResponse(200, $response);
+                    }
         } else {
             $response["status"] = "error";
             $response["message"] = "Failed to create card. Please try again";
@@ -1158,6 +1095,51 @@ $app->post('/createNewCard', function() use ($app) {
         echoResponse(201, $response);
     }
 });
+
+// update card
+$app->post('/updateCard', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['card_id','card_title', 'card_description', 'card_value', 'card_themeColor'],$r->card);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $card_title = $db->purify($r->card->card_title);
+    $card_description = $db->purify($r->card->card_description);
+    $card_value = $db->purify($r->card->card_value);
+    $card_themeColor = $db->purify($r->card->card_themeColor);
+    $card_id = $db->purify($r->card->card_id);
+    $card_image = ($r->card->card_image);
+    $card_image_name = explode('.', $card_image);
+    $card_image_temp_name = $card_image_name[0];
+    $card_image_temp_ext = $card_image_name[1];
+    $card_image_fullname = $card_id.'.'.$card_image_temp_ext;
+    //check if card already exists with same title
+    $iscardExists = $db->getOneRecord("SELECT 1 FROM card_design WHERE card_id='$card_id'");
+    if($iscardExists){
+        $table_to_update = "card_design";
+        $columns_to_update = ['card_title'=>$card_title, 'card_description'=>$card_description, 'card_value'=>$card_value, 'card_themeColor'=>$card_themeColor, 'card_image'=>$card_image_fullname];
+        $where_clause = ['card_id'=>$card_id];
+        $result = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);
+        
+        if ($result) {
+            $response["status"] = "success";
+            $response["message"] = "card updated successfully";
+            $response["card_name"] = $card_image_fullname;
+            echoResponse(200, $response);
+        } else {
+            $response["status"] = "error";
+            $response["message"] = "Failed to update card. Please try again";
+            echoResponse(201, $response);
+        }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "card does not exists!";
+        echoResponse(201, $response);
+    }
+});
+
 
 //get all cards
 $app->get('/getAllCards', function() use ($app) {
@@ -1192,7 +1174,7 @@ $app->get('/getCardDetails', function() use ($app) {
     $db = new DbHandler();
     $card_id = $db->purify($app->request->get('id'));
     
-$card = $db->getOneRecord("SELECT card_title, card_description, card_image, card_themeColor, card_value, count(msg_card_id) as card_count
+$card = $db->getOneRecord("SELECT card_id, card_title, card_description, card_image, card_themeColor, card_value, count(msg_card_id) as card_count
             FROM card_design 
             left join message
             on card_id = msg_card_id
@@ -1214,6 +1196,266 @@ $messages = $db->getRecordset("SELECT msg_sender_name, msg_sender_phone, msg_mes
     } else {
         $response['status'] = "error";
         $response["message"] = "Error Loading Cards!";
+        echoResponse(201, $response);
+    }
+});
+
+//getPinDetails
+$app->get('/getPinDetails', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $pin_id = $db->purify($app->request->get('id'));
+    
+$pin = $db->getOneRecord("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled, msg_message, msg_teacher_name, msg_teacher_phone, msg_sender_name, msg_sender_phone
+            FROM pincode 
+            left join message
+            on msg_card_id = msg_id 
+            WHERE pin_id = '$pin_id' ");
+  if($pin) {
+        //found pin, return success result
+
+        $response['pin'] = $pin;
+        $response['status'] = "success";
+        $response["message"] = "Pin Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pin Details!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getAllPins', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+
+$pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode ");    
+$unused_pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used IS NULL ");
+$used_pin = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used = '1' ");
+
+  if($unused_pin || $used_pin) {
+        $response['unused_pin'] = $unused_pin;
+        $response['used_pin'] = $used_pin;
+        $response['pin'] = $pin;
+        $response['status'] = "success";
+        $response["message"] = "Latest Pins Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pins!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getLatestGenPins', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $pin_total = $db->purify($app->request->get('id'));
+    
+$latestPins = $db->getRecordset("SELECT pin_id, pin_code, pin_date_generated, pin_value, pin_is_used, pin_msg_id, pin_date_used, pin_is_disabled
+            FROM pincode 
+            WHERE pin_is_used IS NULL
+            ORDER BY pin_id DESC
+            LIMIT $pin_total");
+  if($latestPins) {
+        //found pin, return success result
+
+        $response['pins'] = $latestPins;
+        $response['status'] = "success";
+        $response["message"] = "Pin Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Pin Details!";
+        echoResponse(201, $response);
+    }
+});
+
+// create card
+$app->post('/generateNewPin', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['pin_total', 'pin_value'],$r->pin);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $pin_value = $db->purify($r->pin->pin_value);
+    $pin_total = $db->purify($r->pin->pin_total);
+    $pin_date_generated = date("Y-m-d");
+    $latest_pins = array();
+    //check if pincode table exist
+    $isPincodeTableExists = $db->getOneRecord("SELECT 1 FROM pincode");
+
+    if ($isPincodeTableExists) {
+                $pins = $db->getRecordset("SELECT pin_code FROM pincode");
+                    for ($i=0; $i < $pin_total ; $i++) { 
+                        $newPin = $db->randomPin();
+                        //extra check to ensure we dont have the same pin genrated in different row in the database
+                        $pin_code = $db->checkPin($newPin, $pins);
+                        $latest_pins[$i] = $pin_code;
+                        $table_name = "pincode";
+                        $column_names = ['pin_code', 'pin_date_generated', 'pin_value'];
+                        $values = [$pin_code, $pin_date_generated, $pin_value];
+                        $result = $db->insertToTable($values, $column_names, $table_name);
+                   }
+                    if ($result != NULL) {
+                        $response["latest_pins"] = $latest_pins;
+                        $response["status"] = "success";
+                        $response["message"] = "Pin generated successfully";
+                        echoResponse(200, $response);                                            
+                                    
+                    } else {
+                        $response["status"] = "error";
+                        $response["message"] = "Failed to generate pin. Please try again";
+                        echoResponse(201, $response);
+                    }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "Error, please try again!";
+        echoResponse(201, $response);
+    }
+});
+
+$app->get('/getAllVideos', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+
+$videos = $db->getRecordset("SELECT vid_id, vid_date, vid_embed_url,vid_student, vid_teacher, vid_school, vid_city
+            FROM video ");    
+
+  if($videos) {
+        $response['videos'] = $videos;
+        $response['status'] = "success";
+        $response["message"] = "Latest Videos Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Videos!";
+        echoResponse(201, $response);
+    }
+});
+
+
+$app->post('/editVideo', function() use ($app) {
+    
+    $response = array();
+
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['vid_id', 'vid_embed_url','vid_student', 'vid_teacher', 'vid_school', 'vid_city'],$r->video);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $vid_embed_url = $db->purify($r->video->vid_embed_url);
+    $vid_student = $db->purify($r->video->vid_student);
+    $vid_teacher = $db->purify($r->video->vid_teacher);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_city = $db->purify($r->video->vid_city);
+    $vid_id = $db->purify($r->video->vid_id);
+    //check if card already exists with same title
+
+    $isVideoExists = $db->getOneRecord("SELECT 1 FROM video WHERE vid_id='$vid_id'");
+    if($isVideoExists){
+    $table_to_update = "video";
+    $columns_to_update = ['vid_embed_url'=>$vid_embed_url, 'vid_student'=>$vid_student, ' vid_teacher'=>$vid_teacher, 'vid_school'=>$vid_school, 'vid_city'=>$vid_city];
+    $where_clause = ['vid_id'=>$vid_id];
+    $result = $db->updateInTable($table_to_update, $columns_to_update, $where_clause);
+        
+        if ($result) {
+            $response["status"] = "success";
+            $response["message"] = "video updated successfully";
+            echoResponse(200, $response);
+        } else {
+            $response["status"] = "error";
+            $response["message"] = "Failed to update card. Please try again";
+            echoResponse(201, $response);
+        }            
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "card does not exists!";
+        echoResponse(201, $response);
+    }
+});
+
+//creating new video
+$app->post('/createNewVideo', function() use ($app) {
+    
+    $response = array();
+    $r = json_decode($app->request->getBody());
+    verifyRequiredParams(['vid_embed_url','vid_student', 'vid_teacher', 'vid_school', 'vid_city'],$r->video);
+    //require_once 'passwordHash.php';
+    $db = new DbHandler();
+    $vid_embed_url = $db->purify($r->video->vid_embed_url);
+    $vid_student = $db->purify($r->video->vid_student);
+    $vid_teacher = $db->purify($r->video->vid_teacher);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_school = $db->purify($r->video->vid_school);
+    $vid_city = $db->purify($r->video->vid_city);
+    $vid_date = date("Y-m-d h:i:s");
+    $video_count = $db->getOneRecord("SELECT count(*) as vid_count FROM video");
+    //dummy test
+    $isVideoTableExists = $db->getOneRecord("SELECT 1 FROM video");
+    if ($isVideoTableExists || !$isVideoTableExists) {
+    $video_count = $db->getOneRecord("SELECT count(*) as vid_count FROM video");
+                       if ($video_count[vid_count] >= 3) {
+                        $response["status"] = "error";
+                        $response["message"] = "Video directory full. Try updating an existing video";
+                        echoResponse(201, $response);       
+                     }else{
+                        $table_name = "video";
+                        $column_names = ['vid_date','vid_embed_url','vid_student', 'vid_teacher', 'vid_school', 'vid_city'];
+                        $values = [$vid_date, $vid_embed_url, $vid_student, $vid_teacher, $vid_school, $vid_city];
+                        $result = $db->insertToTable($values, $column_names, $table_name);  
+                            if ($result != NULL) {
+                                $response["status"] = "success";
+                                $response["message"] = "Video Created Successfully";
+                                echoResponse(200, $response);                                            
+                                            
+                            }else{
+                                $response["status"] = "error";
+                                $response["message"] = "Failed to create video. Please try again";
+                                echoResponse(201, $response);
+                            }
+                             
+                     }
+  
+    }else{
+        $response["status"] = "error";
+        $response["message"] = "Error, please try again!";
+        echoResponse(201, $response);
+    }
+});
+
+
+
+$app->get('/getVideoDetails', function() use ($app) {
+    $response = array();
+
+    $db = new DbHandler();
+    $vid_id = $db->purify($app->request->get('id'));
+    
+$video = $db->getOneRecord("SELECT *
+            FROM video 
+            WHERE vid_id = '$vid_id' ");
+  if($video) {
+        //found video, return success result
+
+        $response['video'] = $video;
+        $response['status'] = "success";
+        $response["message"] = "Video Details Loaded!";
+        echoResponse(200, $response);
+    } else {
+        $response['status'] = "error";
+        $response["message"] = "Error Loading Video Details!";
         echoResponse(201, $response);
     }
 });

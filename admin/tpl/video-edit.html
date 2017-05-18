@@ -1,0 +1,37 @@
+<div class="bg-light lter b-b wrapper-md">
+  <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}}</h1>
+</div>
+<div class="wrapper-md" ng-controller="VideoController">
+  <div class="row">
+    <div class="col-sm-10">
+      <div class="panel panel-default">
+            <div class="panel-heading font-bold">Video Details</div>
+                <div class="panel-body">
+                      <form role="form" name="form">
+                          <div class="form-group">
+                            <label>Embed URL</label>
+                            <input type="text" class="form-control" required ng-model="video.vid_embed_url">
+                          </div>
+                          <div class="form-group">
+                            <label>Student's Name</label>
+                            <input type="text" class="form-control" required ng-model="video.vid_student">
+                          </div>
+                          <div class="form-group">
+                            <label>Teacher's Name</label>
+                            <input type="text" class="form-control" required ng-model="video.vid_teacher">
+                          </div>                      
+                          <div class="form-group">
+                            <label>School</label>
+                            <input type="text" class="form-control" required ng-model="video.vid_school">
+                          </div>                      
+                          <div class="form-group">
+                            <label>City/Town.</label>
+                            <input type="text" class="form-control" required ng-model="video.vid_city">
+                          </div>                                                                          
+                        <button type="submit" class="btn btn-success" ng-click="editVideo(video)">{{video.vid_id ? 'Edit Video' : 'Create Video' }}</button>
+                      </form>
+                </div>
+        </div>
+    </div>    
+  </div>  
+</div>

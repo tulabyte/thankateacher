@@ -142,6 +142,42 @@ angular.module('app')
                   }
               })
 
+            // create video
+              .state('app.create-video', {
+                  url: '/edit-video',
+                  templateUrl: 'tpl/video-edit.html',
+                  data: {pageTitle: 'Create Video'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/VideoController.js');
+                      }]
+                  }
+              })
+
+              .state('app.edit-video', {
+                  url: '/edit-video/:id',
+                  templateUrl: 'tpl/video-edit.html',
+                  data: {pageTitle: 'Edit Video'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/VideoController.js');
+                      }]
+                  }
+              })
+
+              .state('app.video-list', {
+                  url: '/video-list',
+                  templateUrl: 'tpl/video-list.html',
+                  data: {pageTitle: 'Video List'},
+                  resolve: {
+                      deps: ['uiLoad',
+                        function( uiLoad){
+                          return uiLoad.load('js/controllers/VideoController.js');
+                      }]
+                  }
+              })
 
               // create-card
               .state('app.create-card', {
@@ -169,7 +205,7 @@ angular.module('app')
                   }
               })
 
-              // create-list
+              // card-list
               .state('app.card-list', {
                   url: '/card-list',
                   templateUrl: 'tpl/card-list.html',

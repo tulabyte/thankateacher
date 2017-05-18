@@ -37,7 +37,8 @@ $scope.generatePin = function(pin) {
                     console.log(results);
                     if(results.status == "success") { 
                       $rootScope.toasterPop('success','Action Successful!',results.message);
-                      $state.go('app.latest-pin-gen', {'id' : $scope.pin.pin_total });
+                      $scope.latest_pins = results.latest_pins;
+                 //     $state.go('app.latest-pin-gen', {'id' : $scope.pin.pin_total });
                     } else {
                       //problemo. show error
                       $rootScope.toasterPop('error','Oops!',results.message);

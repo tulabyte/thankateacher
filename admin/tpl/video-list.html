@@ -1,0 +1,46 @@
+<div ng-controller="VideoController">
+<div class="bg-light lter b-b wrapper-md">
+  <div class="pull-left">
+    <h1 class="m-n font-thin h3"> {{$state.current.data.pageTitle}} </h1>
+  </div>
+  <div class="pull-right" ng-if="videos.length < 3">
+        <button class="btn m-b-xs btn-success btn-addon" ui-sref="app.create-video"><i class="fa fa-plus"></i>Create video</button>
+    </div>
+  <div class="clearfix"></div>
+</div>
+<div class="wrapper-md">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      List of videos
+    </div>
+    <div class="table-responsive">
+      <table datatable="ng" class="table table-striped m-b-none">
+        <thead>
+          <tr>
+            <th width="15%">Student</th>
+            <th width="15%">Teacher</th>
+            <th width="20%">Url</th>
+            <th width="15%">School</th>
+            <th width="10%">City</th>
+            <th width="15%">Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="video in videos">
+            <td> {{video.vid_student}} </td>
+            <td> {{video.vid_teacher}} </td>
+            <td> {{video.vid_embed_url}} </td>
+            <td> {{video.vid_school}} </td>
+            <td> {{video.vid_city}} </td>
+            <td> {{video.vid_date}} </td>
+            <td>
+              <button class="btn btn-icon btn-sm btn-info" ui-sref="app.edit-video({id:video.vid_id})" tooltip="Edit video"><i class="fa fa-info"></i> {{video.video_date_used}}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
