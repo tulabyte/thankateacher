@@ -1,8 +1,8 @@
 app.factory("Data", ['$http', '$rootScope', 'bsLoadingOverlayService', 
     function ($http, $rootScope, bsLoadingOverlayService) { // This service connects to our REST API
 
-        var serviceBase = 'http://localhost/thank/thankateacher/api/default/index.php/';
-    //    var serviceBase = 'http://thankateacher.nigerianteachingawards.org/api/default/index.php/';
+        // var serviceBase = 'http://localhost/thank/thankateacher/api/default/index.php/';
+       var serviceBase = 'http://thankateacher.nigerianteachingawards.org/api/default/index.php/';
 
         var obj = {};
 
