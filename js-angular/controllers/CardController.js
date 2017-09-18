@@ -55,6 +55,11 @@ app
         delete $scope.message.pin;
       }
 
+      $scope.selectCard = function(card) {
+        $scope.selected_card = card;
+        $scope.storeSelectedCard(card);
+      }
+
       // store message in cookie
       /*$scope.storeMessage = function(message) {
         $cookieStore.put('message', message);

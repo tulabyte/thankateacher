@@ -84,7 +84,7 @@ app
             }
 
             // get list of messages for archive
-            Data.get('getApprovedMessageList').then(function(results) {
+            Data.get('getActiveMessageList').then(function(results) {
                   console.log(results);
                   if(results.status == "success") {
                         $scope.messages = results.approved_messages;

@@ -127,8 +127,48 @@ textarea {
 a[ng-click]{
     cursor: pointer;
 }
-
 .card-width {
   width: 816px;
   margin: auto;
+}
+label.image-radio {
+  font-weight: normal;
+}
+label.image-radio > input{ /* HIDE RADIO */
+  visibility: hidden; /* Makes input not-clickable */
+  position: absolute; /* Remove input from document flow */
+}
+label.image-radio > input + img{ /* IMAGE STYLES */
+  cursor:pointer;
+  border:2px solid transparent;
+}
+label.image-radio > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
+  border: 5px solid #2bff04;
+}
+label.image-radio > input:checked + p{ /* (RADIO CHECKED) paragraph STYLES */
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+nav ul {
+  display: inline-block;
+  margin-top: 30px !important;
+}
+
+/* @media print {
+   body {-webkit-print-color-adjust: exact;} 
+   
+   p {-webkit-print-color-adjust: #fff;}
+
+   p { color: white !important; }
+
+  .noprint {display: none !important; }
+
+   .card-view { -webkit-print-color-adjust: exact;  }
+} */
+
+@media print { 
+  .white, p.white, strong.white { color: white !important; } 
+  .black, p.black, strong.black { color: black !important; } 
+  .noprint { display: none !important; } 
 }

@@ -25,15 +25,23 @@
 						<div class="col-sm-3">
 							
 							<div class="panel panel-default">
-							     <div class="panel-heading">Click to Select Card Design</div>
+							     <div class="panel-heading">Select a Card Design</div>
 								  <div class="panel-body">
-								  	<!-- <option ng-repeat="card in cards track by card.card_id" ng-value="card">{{card.card_title}} ({{ card.card_value > 0.00 ? ('&#8358;' + card.card_value | number:2) : 'FREE'}})</option> -->
-								    <select class="form-control" ng-model="selected_card" ng-change="storeSelectedCard(selected_card)" ng-options="getCardDisplay(card) for card in cards track by card.card_id">				
-								    </select>
+								  	
+								    <!-- <select class="form-control" ng-model="selected_card" ng-change="storeSelectedCard(selected_card)" ng-options="getCardDisplay(card) for card in cards track by card.card_id">				
+								    </select> -->
+								    
+								    <!-- style="height: 300px; overflow: scroll;" -->
+								    <div >
+										<label class="image-radio" ng-repeat="card in cards">
+										    <input type="radio" name="selected_card" ng-click="selectCard(card)" ng-checked="selected_card.card_id == card.card_id" />
+										    <img ng-src="{{cards_url + card.card_image}}" >
+										    <p class="text-center">{{getCardDisplay(card)}}</p>
+										</label>								    	
+								    </div>
+
 								    <br>
-								    <!-- <div class="alert alert-default" ng-show = "selected_card">
-								    	{{selected_card.card_description}}
-								    </div> -->
+								    
 
 								    <div ng-if="selected_card.card_value > 0.00">
 									    

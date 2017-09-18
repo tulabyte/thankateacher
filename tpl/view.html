@@ -1,4 +1,5 @@
-			<section ng-show="loading">
+			
+			<section class="noprint" ng-show="loading">
 				<div class="container">
 					
 					<div class="row card-width">
@@ -14,7 +15,7 @@
 				<div class="container">
 					
 
-					<div class="row card-width" ng-show="message_error">
+					<div class="row card-width noprint" ng-show="message_error">
 						<div class="col-sm-12">
 							<div class="alert alert-danger" role="alert" >
 							  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -24,7 +25,11 @@
 					</div>
 
 
-					<div class="row card-width" ng-show="message && !message_error">
+					<div class="row card-width text-right noprint" ng-show="message && !message_error" style="padding-bottom: 10px;">
+						<a href="" ng-click="printCard()"><u><i class="fa fa-print"></i> Print Card</u></a>
+					</div>
+
+					<div class="row card-width" ng-show="message && !message_error" id="card-view">
 						<div class="card-view" ng-class="{'black': message.card_themeColor == 'black', 'white': message.card_themeColor == 'white'}" style="background-image: url({{cards_url + message.card_image}}) !important;">
 					    	<p><strong>Dear {{message.msg_teacher_name}}</strong>,</p>
 					    	<p>{{message.msg_message}}</p>
