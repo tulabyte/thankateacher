@@ -30,7 +30,7 @@
 					</div>
 
 					<div class="row card-width" ng-show="message && !message_error" id="card-view">
-						<div class="card-view" ng-class="{'black': message.card_themeColor == 'black', 'white': message.card_themeColor == 'white'}" style="background-image: url({{cards_url + message.card_image}}) !important;">
+						<div class="card-view" ng-class="{black: message.card_themeColor == 'black', white: message.card_themeColor == 'white', padleft: message.card_align == 'RIGHT', padright: message.card_align == 'LEFT'}" style="background-image: url({{cards_url + message.card_image}}) !important;">
 					    	<p><strong>Dear {{message.msg_teacher_name}}</strong>,</p>
 					    	<p>{{message.msg_message}}</p>
 					    	<p>Sincerely,</p>

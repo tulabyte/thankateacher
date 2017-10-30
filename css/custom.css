@@ -108,8 +108,16 @@ textarea {
   color: white;
 }
 
+.padleft {
+  padding-left: 350px !important;
+}
+
+.padright {
+  padding-right: 350px !important;
+}
+
 .card-view {
-  padding: 100px 300px 100px 100px;
+  padding: 100px;
   height: 600px;
   background-size: contain;
   background-repeat: no-repeat;

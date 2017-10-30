@@ -47,6 +47,7 @@ $scope.createCard = function(card) {
     if ($scope.form.file.$valid && $scope.file) {
       if ($state.current.name == 'app.create-card') {
               $scope.card.card_image = $scope.file.name;
+              card.card_value = parseFloat(card.card_value);
               console.log(card);
               Data.post('createNewCard', {
                     card: card

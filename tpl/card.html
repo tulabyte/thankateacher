@@ -77,7 +77,7 @@
 							<div class="panel panel-success">
 							     <div class="panel-heading">Card Preview</div>
 								  <div class="panel-body">
-								    <div class="card-view" ng-class="{'black': selected_card.card_themeColor == 'black', 'white': selected_card.card_themeColor == 'white'}" style="background-image: url({{cards_url + selected_card.card_image}}) !important;">
+								    <div class="card-view" ng-class="{black: selected_card.card_themeColor == 'black', white: selected_card.card_themeColor == 'white', padleft: selected_card.card_align == 'RIGHT', padright: selected_card.card_align == 'LEFT'}" style="background-image: url({{cards_url + selected_card.card_image}}) !important;">
 								    	<p><strong>Dear {{message.teacher_name}}</strong>,</p>
 								    	<p>{{message.message}}</p>
 								    	<p>Sincerely,</p>

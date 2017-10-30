@@ -969,6 +969,7 @@ $app->post('/createNewCard', function() use ($app) {
 
     $r = json_decode($app->request->getBody());
     verifyRequiredParams(['card_title', 'card_description', 'card_value', 'card_themeColor', 'card_image'],$r->card);
+    // var_dump($r); die;
     //require_once 'passwordHash.php';
     $db = new DbHandler();
     $card_title = $db->purify($r->card->card_title);
@@ -1042,7 +1043,7 @@ $app->get('/getCardDetails', function() use ($app) {
     $db = new DbHandler();
     $card_id = $db->purify($app->request->get('id'));
     
-$card = $db->getOneRecord("SELECT card_title, card_description, card_image, card_themeColor, card_value, count(msg_card_id) as card_count
+$card = $db->getOneRecord("SELECT card_title, card_description, card_image, card_themeColor, card_value, card_align, count(msg_card_id) as card_count
             FROM card_design 
             left join message
             on card_id = msg_card_id
